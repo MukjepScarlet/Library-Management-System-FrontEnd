@@ -6,7 +6,7 @@
     import { preprocess, type Row } from "$/utils/db";
     import { fade } from "svelte/transition";
     import { TABLES } from "$/utils/tables";
-    import { getJSON } from "$/utils/net";
+    import { NetUtils } from "$/utils/net";
     import { error } from "$/utils/alert";
     import { userInfo } from "$/utils/user";
     import { randomSaying } from "$/utils/utils";
@@ -61,40 +61,22 @@
     };
 
     onMount(() => {
-        getJSON("/notice/info/", {
-            column: "content",
-            key: "",
-            match: "eq",
-            sort: "update_time",
-            order: "DESC",
-            start: "0",
-            n: "20",
-        }).then((data) => {
-            if (data.code !== 200) {
-                error("公告获取失败");
-                return;
-            }
-
-            notices = preprocess(TABLES.notice.columns, data.data.data);
+        NetUtils.query("notice", {
+            sortBy: "update_time",
+            order: "desc",
+            count: 100,
+        }).then((json) => {
+            notices = preprocess(TABLES.notice.columns, json.data.data);
         });
 
-        getJSON("/books/info/", {
-            column: "isbn",
-            key: "",
-            match: "eq",
-            sort: "date",
-            order: "DESC",
-            start: "0",
-            n: count,
-        }).then((data) => {
-            if (data.code !== 200) {
-                error("书籍获取失败");
-                return;
-            }
+        NetUtils.query("books", {
+            sortBy: "date",
+            order: "desc",
+            count: count,
+        }).then((json) => {
+            stats.bookCount.n = json.data.count;
 
-            stats.bookCount.n = data.data.count;
-
-            books = preprocess(TABLES.books.columns, data.data.data);
+            books = preprocess(TABLES.books.columns, json.data.data);
 
             echarts.init(container1).setOption({
                 title: {
@@ -121,23 +103,14 @@
             });
         });
 
-        getJSON("/labels/info/", {
-            column: "id",
-            key: "",
-            match: "eq",
-            sort: "num",
-            order: "DESC",
-            start: "0",
-            n: count,
-        }).then((data) => {
-            if (data.code !== 200) {
-                error("标签获取失败");
-                return;
-            }
+        NetUtils.query("labels", {
+            sortBy: "num",
+            order: "desc",
+            count: count,
+        }).then((json) => {
+            stats.labelCount.n = json.data.count;
 
-            labels = preprocess(TABLES.labels.columns, data.data.data);
-
-            stats.labelCount.n = data.data.count;
+            labels = preprocess(TABLES.labels.columns, json.data.data);
 
             echarts.init(container2).setOption({
                 title: {
@@ -162,39 +135,11 @@
         });
 
         if ($userInfo)
-            getJSON(`/borrowinfo/${$userInfo.userId}`, {
-                column: "id",
-                key: "",
-                match: "eq",
-                sort: "num",
-                order: "DESC",
-                start: "0",
-                n: "0",
-            }).then((data) => {
-                if (data.code !== 200) {
-                    error("借阅获取失败");
-                    return;
-                }
-
-                stats.borrowCount.n = data.data.count;
+            NetUtils.myBorrow($userInfo.userId as unknown as number, {
+                count: 0,
+            }).then((json) => {
+                stats.borrowCount.n = json.data.count;
             });
-
-        getJSON("/users/info/", {
-            column: "user_id",
-            key: "",
-            match: "eq",
-            sort: "user_id",
-            order: "DESC",
-            start: "0",
-            n: "0",
-        }).then((data) => {
-            if (data.code !== 200) {
-                error("用户获取失败");
-                return;
-            }
-
-            stats.userCount.n = data.data.count;
-        });
 
         carouselInterval = setInterval(() => {
             enableCarousel && notices.length && currentIndex++;
@@ -217,7 +162,11 @@
         <div class="card shadow-lg bg-base-100 col-span-2 min-w-[50%] overflow-hidden">
             <div class="card-body flex-col gap-6 bg-base-100 bg-opacity-75">
                 <div class="card-title divider">
-                    <button class="tooltip" data-tip="点击以开启/关闭公告轮播" on:click|preventDefault={() => (enableCarousel = !enableCarousel)}>公告</button>
+                    <button
+                        class="tooltip"
+                        data-tip="点击以{enableCarousel ? '关闭' : '开启'}公告轮播"
+                        on:click|preventDefault={() => (enableCarousel = !enableCarousel)}>公告</button
+                    >
                 </div>
 
                 {#if notice}
@@ -247,13 +196,16 @@
     {/if}
 
     <div class="stats shadow-lg bg-base-100 col-span-2">
+        <!-- TODO: 个人借阅不会响应式更新 -->
         {#key $userInfo}
-            {#each Object.entries(stats).filter(([_, { render }]) => render) as [key, { name, n }] (key)}
-                <div class="stat place-items-center">
-                    <div class="stat-title">{name}</div>
-                    <div class="stat-value">{n}</div>
-                    <div class="stat-desc">{randomSaying()}</div>
-                </div>
+            {#each Object.entries(stats) as [key, { name, n, render }] (key)}
+                {#if render}
+                    <div class="stat place-items-center">
+                        <div class="stat-title">{name}</div>
+                        <div class="stat-value">{n}</div>
+                        <div class="stat-desc">{randomSaying()}</div>
+                    </div>
+                {/if}
             {/each}
         {/key}
     </div>

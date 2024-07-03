@@ -50,7 +50,7 @@
         <Alerts />
         <Header />
         <div class="max-w-[100vw] px-6 pb-16 xl:pr-2">
-            <Router {routes} />
+            <Router {routes} restoreScrollState />
         </div>
     </div>
 

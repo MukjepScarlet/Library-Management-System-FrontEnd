@@ -7,10 +7,12 @@
 
     export let params: { table: TableName };
 
-    const { table } = params;
-
     $route = ["管理"];
-    $current = TABLES[table].name;
+    $: {
+        $current = TABLES[params.table].name;
+    }
 </script>
 
-<Table columns={TABLES[table].columns} allowModify name={table}></Table>
+{#key params}
+    <Table allowModify name={params.table}></Table>
+{/key}

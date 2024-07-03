@@ -8,7 +8,7 @@
 
     import { route, current } from "$/utils/utils";
     import { TABLES } from "$/utils/tables";
-    import { postJSON } from "$/utils/net";
+    import { NetUtils } from "$/utils/net";
     import { currentIdNumber, userInfo } from "$/utils/user";
 
     $route = ["通用"];
@@ -40,15 +40,10 @@
         newBorrow.isbn = currentRow.isbn;
         newBorrow.userId = $userInfo!.userId;
         newBorrow.beginTime = new Date();
+        newBorrow.returnTime = new Date();
+        newBorrow.returnTime.setDate(newBorrow.beginTime.getDate() + 7);
 
-        postJSON("/borrowinfo/add/", newBorrow).then((data) => {
-            if (data.code !== 200) {
-                error("借阅失败!");
-                return;
-            }
-
-            success("借阅成功.");
-        });
+        NetUtils.add("borrowinfo", newBorrow).then(() => success("借阅成功!"));
     };
 </script>
 

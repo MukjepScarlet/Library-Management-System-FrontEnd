@@ -4,7 +4,7 @@
 
     import { route, current } from "$/utils/utils";
     import { error, success } from "$/utils/alert";
-    import { postJSON } from "$/utils/net";
+    import { NetUtils } from "$/utils/net";
     import { login } from "$/utils/user";
 
     $route = ["个人"];
@@ -24,17 +24,8 @@
             return;
         }
 
-        postJSON("/users/login", {
-            idNumber,
-            password,
-        }).then((data) => {
-            if (data.code !== 200) {
-                error("登录失败!");
-                return;
-            }
-
+        NetUtils.login(idNumber, password).then(() => {
             success("欢迎回来!");
-
             login(idNumber);
         });
     };

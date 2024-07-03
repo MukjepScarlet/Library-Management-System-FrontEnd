@@ -4,7 +4,7 @@
 
     import { route, current } from "$/utils/utils";
     import { error, info, success } from "$/utils/alert";
-    import { postJSON } from "$/utils/net";
+    import { NetUtils } from "$/utils/net";
     import { login } from "$/utils/user";
 
     $route = ["个人"];
@@ -39,20 +39,9 @@
             return;
         }
 
-        postJSON("/users/register", {
-            studentIdNumber,
-            password,
-            email,
-        }).then((data) => {
-            if (data.code !== 200) {
-                error("注册失败!");
-                return;
-            }
-
-            success(`注册成功, 你的借书证号是: ${data.data}`);
-            info("已经为你自动登录...");
-
-            login(data.data);
+        NetUtils.register(studentIdNumber, password, email).then((json) => {
+            success(`注册成功, 你的借书证号是: ${json.data.idNumber}`, 10000);
+            login(json.data.idNumber);
         });
     };
 </script>

@@ -7,10 +7,12 @@
 
     export let params: { table: TableName };
 
-    const { table } = params;
-
     $route = ["通用"];
-    $current = TABLES[table].name;
+    $: {
+        $current = TABLES[params.table].name;
+    }
 </script>
 
-<Table columns={TABLES[table].columns} name={table}></Table>
+{#key params}
+    <Table name={params.table}></Table>
+{/key}

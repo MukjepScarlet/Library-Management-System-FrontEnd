@@ -2,9 +2,8 @@
     import { TABLES } from "$/utils/tables";
     import { currentIdNumber, userInfo } from "$/utils/user";
     import { link } from "svelte-spa-router";
-    import { fade } from "svelte/transition";
-
-    let opening = [true, true, true];
+    import { fade, slide } from "svelte/transition";
+    import SidebarMenu from "./base/SidebarMenu.svelte";
 </script>
 
 <div class="drawer-side z-40">
@@ -28,9 +27,9 @@
             <!-- 菜单 -->
             <ul class="menu px-4 py-4">
                 <!-- 游客 -->
-                <li>
-                    <details bind:open={opening[0]}>
-                        <summary class="text-lg font-semibold gap-4">
+                <li in:fade>
+                    <SidebarMenu>
+                        <svelte:fragment slot="summary">
                             <img
                                 width="32"
                                 height="32"
@@ -38,27 +37,26 @@
                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAABz0lEQVR4nO2bv0sDMRSAb/K/6OzfVi6ii2BxKIKg0ouCg4sh11S4YKk6ig7d1MWHjp2kg64W7eYSOfqDDpd6iLmL996Dtx1c30fyvZejCQIKCgqKnBHVZS1issfD+JOz2HiUbxGL95vN7krgsvjDtXjsQbHWTCG4A8BkL31Je1uZ+9PEgNLW/Bq9FJrD56f5SnAGgE+X/d20eLGl5uRFQ5UKIM3Zb3EHgE1eMCsyLToLQApGty6rDwAsOXuOAIxoBZhKbwFhkSCaLSBsEmwglyBgaYNAAHQmBDRzgCAJKtxdAGgS1DQKA+azgPiFBJODC+vHjMXOkfXcT53Fm0mQLwGQFpEHQNZz3gEAcoDG7QD4AwB5nVDZSVDndIKfABo0CRpygCIJGrRdQNBxWNFxGMgBGq8DAPsoLEiCiiQImLcAYHcAYAcgSIKKJAiYtwB45ICFv8m5B5DsdMzxRtv6KavsdA6Ae5gnm53iAJztJmb4cGNGg75XWRiAoYfFFwrg9fEWN4DzlvYOwqB/jVuCnLpAh7oApy4QO3ZAOLkwgbcLhPLqH3QBd1dmjtbFKmfyvWzLL81Q7gUuI6rLGmdxNwrlR+nFFn1tjoKCIqhifAMkRlipt08cVgAAAABJRU5ErkJggg=="
                             />
                             <span>通用</span>
-                        </summary>
-                        {#key opening[0]}
-                            <ul in:fade>
-                                {#each Object.entries(TABLES).filter(([_, table]) => table.searchable) as [key, { name }] (key)}
-                                    <li>
-                                        <a href="/general/{key}/" class="btn btn-ghost" use:link>{name}一览</a>
-                                    </li>
-                                {/each}
+                        </svelte:fragment>
+
+                        <svelte:fragment slot="list">
+                            {#each Object.entries(TABLES).filter(([_, table]) => table.searchable) as [key, { name }] (key)}
                                 <li>
-                                    <a href="/books/" class="btn btn-ghost" use:link>查询书籍</a>
+                                    <a href="/general/{key}/" class="btn btn-ghost" use:link>{name}一览</a>
                                 </li>
-                            </ul>
-                        {/key}
-                    </details>
+                            {/each}
+                            <li>
+                                <a href="/books/" class="btn btn-ghost" use:link>书籍查询/借阅</a>
+                            </li>
+                        </svelte:fragment>
+                    </SidebarMenu>
                 </li>
 
                 {#if $userInfo}
                     <!-- 用户 -->
-                    <li>
-                        <details bind:open={opening[1]}>
-                            <summary class="text-lg font-semibold gap-4">
+                    <li in:fade>
+                        <SidebarMenu>
+                            <svelte:fragment slot="summary">
                                 <img
                                     width="32"
                                     height="32"
@@ -66,32 +64,31 @@
                                     src="data:image/png;base64,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"
                                 />
                                 <span>个人</span>
-                            </summary>
-                            {#key opening[1]}
-                                <ul in:fade>
-                                    <li>
-                                        <a href="/myborrow/" class="btn btn-ghost" use:link>我的借阅</a>
-                                    </li>
-                                </ul>
-                            {/key}
-                        </details>
+                            </svelte:fragment>
+
+                            <svelte:fragment slot="list">
+                                <li>
+                                    <a href="/myborrow/" class="btn btn-ghost" use:link>我的借阅</a>
+                                </li>
+                            </svelte:fragment>
+                        </SidebarMenu>
                     </li>
 
                     <!-- 管理 -->
-                    <li>
-                        <details bind:open={opening[2]}>
-                            <summary class="text-lg font-semibold gap-4">
-                                <img
-                                    width="32"
-                                    height="32"
-                                    alt=""
-                                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAADFElEQVR4nO1ZTU8TQRiu8WbixYNXT95MPHr3ot68+BeMdoZGYkqEGL8gKtkdJGigW9qdFUI1lI8i9TNGug0xUUCRRDTEJnyEohgDmBCMIK+ZlfYgEHbbhQH2fZInaWez03memXf6vjM+HwKBQCAQtqBSvUIl/AejHLYpZ1XCK32bAcUfPcYI/8NKpItcnytjU6h+3HUDGOHtovOn8T4Y/7awLfmya9AyQCX6c1fFK/7IIZXqS3cC92EkMyNd6HrMjM1BbWnzsrUKApEjrhnAKFdEp23hHukiN2LC6M2FRL0r4rWz2j5GjRnR6eD7SekCN+LH4WlrL1Apn2eljQeKNkD1R88L8UZ1t3RxdtnMnlhhwCi/WJR48MEeVsI/i85e94xIF2aXb3ozuTAYbT3Turfw2Sf6CdFRfcVDGMvOSxdmm18XoOFy/Lf1j0D56YINqCnhz0QnLzreyRflkK+6P6ysAr2nIPHVAf0wo3y59kITfBmdky7IKTMTP6G2tMlaBYxGjzo2gFH9nni5M5qWLqZQdhm9SyuJUcTZ7Acj+2sCxrx4eWhoSrqQQjn8aVqEwbJK+C/lXNNB2waoRA9Lz+vdJjG4/eVP+KL0AbvPRfsG0H8vmf1ZSA9M7Wz2T+VNcGxAWvbgXWLRBphvJ6EllIK6YMxiTEtBqi/rHQNaQqlVMRULm64MLlyVgHBV16a2FW1AXTBmfb/0OA7lyTbr892yB67Ozla0FW1AebINypNx7xkQC5trhEDaFQO0G52gVSY2ta1oA1J9WWvjE7MuGNNMb22C6R1ONIA6XQGEf98GqWuejTcf5WczdK1j1XPtemf+efR2cs0+FMKnPW0Ac2QAxT0AcBOkWAtALq6wFghiLQBYC1CsBQBrgQH5eT3WAgNbUQyRjVPh0NV268RV/IBIVf9/3nClPX+qHLnVLT2ddr0WCO0wA7AWoHggAgVXgybeC6RWxRTeC5R56Fi8Du8FzDVCAO8FYPdmghSPxMDbZ4KET0hPXV2mSvQx2wYo1Di1y0wYZ35+0rYBCAQCgUD4PIG/J4m1qtYqriQAAAAASUVORK5CYII="
-                                />
-                                <span>管理</span>
-                            </summary>
+                    {#if ~~$userInfo.roleId >= 2}
+                        <li in:fade>
+                            <SidebarMenu>
+                                <svelte:fragment slot="summary">
+                                    <img
+                                        width="32"
+                                        height="32"
+                                        alt=""
+                                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAADFElEQVR4nO1ZTU8TQRiu8WbixYNXT95MPHr3ot68+BeMdoZGYkqEGL8gKtkdJGigW9qdFUI1lI8i9TNGug0xUUCRRDTEJnyEohgDmBCMIK+ZlfYgEHbbhQH2fZInaWez03memXf6vjM+HwKBQCAQtqBSvUIl/AejHLYpZ1XCK32bAcUfPcYI/8NKpItcnytjU6h+3HUDGOHtovOn8T4Y/7awLfmya9AyQCX6c1fFK/7IIZXqS3cC92EkMyNd6HrMjM1BbWnzsrUKApEjrhnAKFdEp23hHukiN2LC6M2FRL0r4rWz2j5GjRnR6eD7SekCN+LH4WlrL1Apn2eljQeKNkD1R88L8UZ1t3RxdtnMnlhhwCi/WJR48MEeVsI/i85e94xIF2aXb3ozuTAYbT3Turfw2Sf6CdFRfcVDGMvOSxdmm18XoOFy/Lf1j0D56YINqCnhz0QnLzreyRflkK+6P6ysAr2nIPHVAf0wo3y59kITfBmdky7IKTMTP6G2tMlaBYxGjzo2gFH9nni5M5qWLqZQdhm9SyuJUcTZ7Acj+2sCxrx4eWhoSrqQQjn8aVqEwbJK+C/lXNNB2waoRA9Lz+vdJjG4/eVP+KL0AbvPRfsG0H8vmf1ZSA9M7Wz2T+VNcGxAWvbgXWLRBphvJ6EllIK6YMxiTEtBqi/rHQNaQqlVMRULm64MLlyVgHBV16a2FW1AXTBmfb/0OA7lyTbr892yB67Ozla0FW1AebINypNx7xkQC5trhEDaFQO0G52gVSY2ta1oA1J9WWvjE7MuGNNMb22C6R1ONIA6XQGEf98GqWuejTcf5WczdK1j1XPtemf+efR2cs0+FMKnPW0Ac2QAxT0AcBOkWAtALq6wFghiLQBYC1CsBQBrgQH5eT3WAgNbUQyRjVPh0NV268RV/IBIVf9/3nClPX+qHLnVLT2ddr0WCO0wA7AWoHggAgVXgybeC6RWxRTeC5R56Fi8Du8FzDVCAO8FYPdmghSPxMDbZ4KET0hPXV2mSvQx2wYo1Di1y0wYZ35+0rYBCAQCgUD4PIG/J4m1qtYqriQAAAAASUVORK5CYII="
+                                    />
+                                    <span>管理</span>
+                                </svelte:fragment>
 
-                            {#key opening[2]}
-                                <ul in:fade>
+                                <svelte:fragment slot="list">
                                     {#each Object.entries(TABLES) as [key, { name, managePermission }] (key)}
                                         {#if ~~$userInfo.roleId >= managePermission}
                                             <li>
@@ -99,10 +96,10 @@
                                             </li>
                                         {/if}
                                     {/each}
-                                </ul>
-                            {/key}
-                        </details>
-                    </li>
+                                </svelte:fragment>
+                            </SidebarMenu>
+                        </li>
+                    {/if}
                 {/if}
             </ul>
             <!-- 底边 -->

@@ -1,26 +1,36 @@
 import { writable } from "svelte/store";
 import { info } from "./alert";
-import { type Row } from "./db";
+import { preprocess, type Row } from "./db";
 import { TABLES } from "./tables";
 import { replace } from "svelte-spa-router";
+import { NetUtils } from "./net";
 
 export const currentIdNumber = writable<string | null>(null);
 
 export const userInfo = writable<Row<typeof TABLES.users.columns> | undefined>(undefined);
 
 export const checkLogin = () => {
-    currentIdNumber.set(localStorage.getItem('userId'));
+    const idNumber = localStorage.getItem('idNumber');
+
+    if (!idNumber) return;
+
+    NetUtils.query('users', {
+        searchBy: 'id_number',
+        query: idNumber,
+    }).then(json => {
+        userInfo.set(preprocess(TABLES.users.columns, json.data.data)[0]);
+        currentIdNumber.set(localStorage.getItem('idNumber'));
+    })
 }
 
-export const login = (userId: string | number) => {
-    localStorage.setItem('userId', userId.toString());
-    currentIdNumber.set(userId.toString());
+export const login = (idNumber: string | number) => {
+    localStorage.setItem('idNumber', idNumber.toString());
+    currentIdNumber.set(idNumber.toString());
     replace('/');
-    info('登录成功...')
 };
 
 export const logout = () => {
-    localStorage.removeItem('userId');
+    localStorage.removeItem('idNumber');
     currentIdNumber.set(null);
     replace('/');
     info('您已退出...')

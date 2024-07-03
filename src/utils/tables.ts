@@ -21,7 +21,7 @@ export const TABLES = {
             userName: new Column("用户名", "VARCHAR(40)", "text"),
             password: new Column("密码", "VARCHAR(40)", "text"),
             email: new Column("联系方式", "VARCHAR(40)", "text"),
-            roleId: new Column("角色ID", "BIGINT", "number", { isImmutable: true, foreignKey: { tableName: "ROLES", key: "id" } }),
+            roleId: new Column("角色ID", "BIGINT", "number", { isImmutable: true, foreignKey: { tableName: "roles", key: "id" } }),
             createDate: new Column("注册日期", "DATE", "date", { isImmutable: true }),
             bookNum: new Column("借阅数", "INT", "number", { isImmutable: true }),
             fine: new Column("罚款金额", "DECIMAL(10,2)", "number", { isImmutable: true, step: 0.01 }),
@@ -34,7 +34,7 @@ export const TABLES = {
         columns: {
             id: new Column("ID", "BIGINT", "number", { isPrimary: true, isImmutable: true }),
             roleName: new Column("角色名称", "VARCHAR(20)", "text"),
-            permissionId: new Column("权限ID", "BIGINT", "number", { isImmutable: true, foreignKey: { tableName: "PERMISSIONS", key: "id" } }),
+            permissionId: new Column("权限ID", "VARCHAR(40)", "text"), // 设计有问题
         }
     },
     permissions: {
@@ -78,8 +78,8 @@ export const TABLES = {
         managePermission: 2,
         columns: {
             id: new Column("ID", "BIGINT", "number", { isPrimary: true, isImmutable: true }),
-            isbn: new Column("ISBN", "CHAR(13)", "text", { foreignKey: { tableName: "BOOKS", key: "ISBN" } }),
-            labelId: new Column("标签ID", "BIGINT", "number", { foreignKey: { tableName: "LABELS", key: "id" } }),
+            isbn: new Column("ISBN", "CHAR(13)", "text", { foreignKey: { tableName: "books", key: "isbn" } }),
+            labelId: new Column("标签ID", "BIGINT", "number", { foreignKey: { tableName: "labels", key: "id" } }),
         }
     },
     notice: {
@@ -101,8 +101,8 @@ export const TABLES = {
         managePermission: 2,
         columns: {
             id: new Column("ID", "BIGINT", "number", { step: 1, isPrimary: true }),
-            isbn: new Column("ISBN", "CHAR(13)", "text", { foreignKey: { tableName: "BOOKS", key: "ISBN" } }),
-            userId: new Column("用户ID", "BIGINT", "number", { foreignKey: { tableName: "USERS", key: "userId" } }),
+            isbn: new Column("ISBN", "CHAR(13)", "text", { foreignKey: { tableName: "books", key: "isbn" } }),
+            userId: new Column("用户ID", "BIGINT", "number", { foreignKey: { tableName: "users", key: "userId" } }),
             beginTime: new Column("借书时间", "DATETIME", "datetime", { isImmutable: true }),
             returnTime: new Column("预期归还时间", "DATETIME", "datetime"),
             fine: new Column("罚款金额", "DECIMAL(10,2)", "number", { step: 0.01 }),

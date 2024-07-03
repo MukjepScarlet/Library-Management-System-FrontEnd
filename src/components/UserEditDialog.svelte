@@ -2,42 +2,27 @@
     import EditDialog from "./base/EditDialog.svelte";
 
     import { preprocess } from "$/utils/db";
-    import { getJSON, postJSON } from "$/utils/net";
+    import { NetUtils } from "$/utils/net";
     import { currentIdNumber, userInfo } from "$/utils/user";
-    import { error } from "$/utils/alert";
     import { TABLES } from "$/utils/tables";
+    import { success } from "$/utils/alert";
 
     const columns = TABLES.users.columns;
 
     $: if ($currentIdNumber) refresh();
 
     const refresh = () => {
-        getJSON("/users/info/", {
-            column: "id_number",
-            key: $currentIdNumber,
-            match: "eq",
-            sort: "user_id",
-            order: "DESC",
-            start: "0",
-            n: "1",
-        }).then((data) => {
-            if (data.code !== 200) {
-                error("获取内容失败!");
-                return;
-            }
-
-            $userInfo = preprocess(columns, data.data.data)[0];
-            console.log($userInfo);
+        NetUtils.query("users", {
+            searchBy: "id_number",
+            query: $currentIdNumber!,
+        }).then((json) => {
+            $userInfo = preprocess(columns, json.data.data)[0];
         });
     };
 
     const handler = () => {
-        postJSON(`/users/update/`, $userInfo).then((data) => {
-            if (data.code !== 200) {
-                error("个人资料更新失败!");
-                return;
-            }
-
+        NetUtils.modify("users", $userInfo!).then(() => {
+            success("修改成功!");
             ui.close();
         });
     };

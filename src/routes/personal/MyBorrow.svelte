@@ -4,7 +4,7 @@
     import Table from "$/components/Table.svelte";
     import { error, success } from "$/utils/alert";
     import type { Row } from "$/utils/db";
-    import { postJSON } from "$/utils/net";
+    import { NetUtils } from "$/utils/net";
     import { TABLES } from "$/utils/tables";
     import { currentIdNumber, userInfo } from "$/utils/user";
 
@@ -30,19 +30,15 @@
             return;
         }
 
-        postJSON("/borrowinfo/remove/", [currentRow.id]).then((data) => {
-            if (data.code !== 200) {
-                error("归还失败!");
-                return;
-            }
-
-            success("归还成功.");
+        NetUtils.remove('borrowinfo', [currentRow.id]).then(() => {
+            success("归还成功!");
+            // TODO: 刷新表格
         });
     };
 </script>
 
-<Table columns={TABLES.borrowinfo.columns} name="borrowinfo" selectSource="/borrowinfo/{$userInfo?.userId}">
-    <button slot="operation" let:row class="btn btn-info" disabled={row.num === 0} on:click={() => (currentRow = row) && returnUI.showModal()}> 归还 </button>
+<Table name="borrowinfo" selectAPI={NetUtils.myBorrow} selectParam={$userInfo?.userId}>
+    <button slot="operation" let:row class="btn btn-info" on:click={() => (currentRow = row) && returnUI.showModal()}> 归还 </button>
 
     <Dialog slot="dialog" bind:ui={returnUI} title="操作确认: 还书">
         <div slot="content">

@@ -1,4 +1,5 @@
 import './extensions/string.extensions';
+import type { TableName } from './tables';
 
 /**
  * 用到的合法SQL数据类型
@@ -107,7 +108,7 @@ function getDefaultRenderRule<T extends SQLType>(type: T): (value: SQL2TSType<T>
     if (match)
         return (value) => (value as number).toFixed(~~match[1]);
 
-    return (value) => (value).toString();
+    return (value) => new String(value).toString();
 }
 
 // 生成行类型，键是ColumnKey，值是对应的SQL数据类型映射的TypeScript数据类型
