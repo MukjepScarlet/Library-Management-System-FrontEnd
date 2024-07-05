@@ -30,7 +30,13 @@
                         <td>{key}</td>
                     {/if}
                     <td>{column.renderName}</td>
-                    <td>{column.render(row[key])}</td>
+                    <td class={row[key] ? "" : "italic text-base-300"}>
+                        {#if row[key]}
+                            {column.render(row[key])}
+                        {:else}
+                            NULL
+                        {/if}
+                    </td>
                 </tr>
             {/each}
         </tbody>
