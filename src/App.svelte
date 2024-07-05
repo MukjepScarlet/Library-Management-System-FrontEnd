@@ -15,7 +15,7 @@
     import General from "./routes/general/General.svelte";
     import Management from "./routes/management/Management.svelte";
 
-    import { current, isSidebarOpening } from "./utils/utils";
+    import { current, isSidebarOpening, route } from "./utils/utils";
     import { onMount } from "svelte";
     import { checkLogin } from "./utils/user";
 
@@ -37,11 +37,7 @@
 </script>
 
 <svelte:head>
-    {#if $current}
-        <title>图书管理系统 - {$current}</title>
-    {:else}
-        <title>图书管理系统</title>
-    {/if}
+    <title>{["图书管理系统", ...$route, $current].filter((it) => it).join(" - ")}</title>
 </svelte:head>
 
 <div class="bg-base-100 drawer lg:drawer-open">

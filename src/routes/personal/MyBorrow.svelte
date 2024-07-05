@@ -38,7 +38,7 @@
 </script>
 
 <Table name="borrowinfo" selectAPI={NetUtils.myBorrow} selectParam={$userInfo?.userId}>
-    <button slot="operation" let:row class="btn btn-info" on:click={() => (currentRow = row) && returnUI.showModal()}> 归还 </button>
+    <button slot="operation" let:row class="btn btn-sm btn-primary" on:click={() => (currentRow = row) && returnUI.showModal()}> 归还 </button>
 
     <Dialog slot="dialog" bind:ui={returnUI} title="操作确认: 还书">
         <div slot="content">

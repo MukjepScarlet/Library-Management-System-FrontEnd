@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { Column, type Columns, type Row, emptyRow, preprocess } from "$/utils/db";
+    import { type Columns, type Row, emptyRow, preprocess } from "$/utils/db";
     import { NetUtils } from "$/utils/net";
 
     import Dialog from "./base/Dialog.svelte";
@@ -9,6 +9,7 @@
     import { warning, success } from "$/utils/alert";
     import { fade } from "svelte/transition";
     import { parseColumnName, TABLES, type TableName } from "$/utils/tables";
+    import ContextMenu from "./ContextMenu.svelte";
 
     /** 表名 */
     export let name: TableName;
@@ -111,6 +112,14 @@
     };
 
     onMount(selectHandler);
+
+    // 右键菜单
+    let contextMenuState = { x: 0, y: 0, visible: false };
+    const showContextMenu = (event: MouseEvent) => {
+        contextMenuState.x = event.clientX;
+        contextMenuState.y = event.clientY;
+        contextMenuState.visible = true;
+    };
 </script>
 
 <div class="flex flex-col justify-center gap-4 mt-4 mx-auto">
@@ -127,12 +136,7 @@
 
         <!-- search -->
         <label class="input input-bordered input-sm flex items-center gap-2 pr-0">
-            <input
-                type="text"
-                class="grow"
-                placeholder="搜索..."
-                bind:value={query}
-            />
+            <input type="text" class="grow" placeholder="搜索..." bind:value={query} />
             <div class="tooltip tooltip-bottom" data-tip="搜索">
                 <button class="btn btn-ghost btn-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70"
@@ -195,45 +199,6 @@
                 </label>
             </div>
         {/if}
-
-        {#if allowModify}
-            <div class="divider divider-horizontal"></div>
-
-            <!-- multiple operations -->
-            <details class="dropdown dropdown-end">
-                <summary class="m-1 btn btn-sm">其他操作</summary>
-                <ul class="p-2 shadow menu gap-2 dropdown-content z-[1] bg-base-100 rounded-box w-32">
-                    <li>
-                        <button class="btn btn-sm" on:click|preventDefault={() => (selectedKeys = rows.map((r) => r[primaryKey]))}> 全选 </button>
-                    </li>
-                    <li>
-                        <button class="btn btn-sm" on:click|preventDefault={() => (selectedKeys.length = 0)}> 全不选 </button>
-                    </li>
-                    <li>
-                        <button
-                            class="btn btn-sm"
-                            on:click|preventDefault={() => (selectedKeys = rows.map((r) => r[primaryKey]).filter((k) => !~selectedKeys.indexOf(k)))}
-                        >
-                            反选
-                        </button>
-                    </li>
-                    <li></li>
-                    <li>
-                        <button class="btn btn-success btn-sm" on:click|preventDefault={() => (currentRow = emptyRow(columns)) && insertUI.showModal()}>
-                            新增项目
-                        </button>
-                    </li>
-                    <li>
-                        <button
-                            class="btn btn-error btn-sm"
-                            on:click|preventDefault={() => (selectedKeys.length === 0 ? warning("请至少选中一项再执行此操作") : multipleDeleteUI.showModal())}
-                        >
-                            删除选中项目
-                        </button>
-                    </li>
-                </ul>
-            </details>
-        {/if}
     </form>
 
     <!-- table -->
@@ -251,57 +216,48 @@
                         <th><span>{column.renderName}</span></th>
                     {/if}
                 {/each}
-                <!-- operations -->
-                <th>操作</th>
             </tr>
         </thead>
         <tbody>
             {#each rows as row (row[primaryKey])}
-                <tr class="hover:bg-base-200 transition text-center" transition:fade>
+                <tr
+                    class="hover:bg-base-200 transition text-center"
+                    transition:fade
+                    on:contextmenu|preventDefault={(e) => ((currentRow = row), showContextMenu(e))}
+                >
                     <!-- 内容 -->
                     {#each Object.entries(columns) as [key, column] (key)}
                         {#if row[key]}
                             <td class:font-semibold={column.isPrimary} class:italic={column.foreignKey !== undefined}>
-                                <!-- 主键特殊处理: 多选框 -->
-                                {#if column.isPrimary}
+                                {#if column.isPrimary && allowModify}
+                                    <!-- 主键特殊处理: 多选框 -->
                                     <label class="label cursor-pointer">
-                                        <span class="label-text">{column.render?.(row[key])}</span>
-                                        {#if allowModify}
-                                            <input type="checkbox" class="checkbox" bind:group={selectedKeys} value={row[key]} />
-                                        {/if}
+                                        <span class="label-text">{column.render(row[key])}</span>
+                                        <input type="checkbox" class="checkbox" bind:group={selectedKeys} value={row[key]} />
                                     </label>
-                                    <!-- 外键特殊处理 -->
                                 {:else if column.foreignKey !== undefined}
+                                    <!-- 外键特殊处理 -->
                                     <button
                                         class="btn btn-sm btn-secondary tooltip tooltip-secondary"
                                         data-tip="展开外键详情"
                                         on:click={() => (currentRow = row) && (currentColumn = key) && foreignKeyUI.showModal()}
                                     >
-                                        {column.render?.(row[key])}
+                                        {column.render(row[key])}
                                     </button>
-                                    <!-- 长文本特殊处理: 隐藏过长内容 -->
                                 {:else if column.editRule === "textarea"}
+                                    <!-- 长文本特殊处理: 隐藏过长内容 -->
                                     <span class="tooltip" data-tip={row[key]}>
-                                        {column.render?.(row[key])}
+                                        {column.render(row[key])}
                                     </span>
-                                    <!-- 标准 -->
                                 {:else}
-                                    <span>{column.render?.(row[key])}</span>
+                                    <!-- 标准 -->
+                                    <span>{column.render(row[key])}</span>
                                 {/if}
                             </td>
                         {:else}
                             <td class="italic text-base-300">NULL</td>
                         {/if}
                     {/each}
-                    <!-- 操作按钮列表 -->
-                    <td class="flex gap-2 justify-center">
-                        <slot name="operation" {row}></slot>
-
-                        {#if allowModify}
-                            <button class="btn btn-error" on:click|preventDefault={() => (currentRow = row) && deleteUI.showModal()}> 删除 </button>
-                            <button class="btn btn-info" on:click|preventDefault={() => (currentRow = row) && updateUI.showModal()}> 编辑 </button>
-                        {/if}
-                    </td>
                 </tr>
             {:else}
                 <tr>
@@ -313,6 +269,47 @@
         </tbody>
     </table>
 </div>
+
+<ContextMenu {...contextMenuState}>
+    <ul class="menu m-2 p-2 gap-2 lg:w-48">
+        {#if maxPage !== 1}
+            <li><button class="btn btn-sm" disabled={currentPage === 1} on:click|preventDefault={() => ((currentPage = 1), selectHandler())}>首页</button></li>
+            <li><button class="btn btn-sm" disabled={currentPage === 1} on:click|preventDefault={() => (currentPage--, selectHandler())}>上一页</button></li>
+            <li>
+                <button class="btn btn-sm" disabled={currentPage === maxPage} on:click|preventDefault={() => (currentPage++, selectHandler())}>下一页</button>
+            </li>
+            <li>
+                <button class="btn btn-sm" disabled={currentPage === maxPage} on:click|preventDefault={() => ((currentPage = maxPage), selectHandler())}
+                    >末页</button
+                >
+            </li>
+            <li></li>
+        {/if}
+        {#if allowModify}
+            <li><button class="btn btn-sm" on:click|preventDefault={() => (selectedKeys = rows.map((r) => r[primaryKey]))}>全选</button></li>
+            <li><button class="btn btn-sm" on:click|preventDefault={() => (selectedKeys.length = 0)}>全不选</button></li>
+            <li>
+                <button
+                    class="btn btn-sm"
+                    on:click|preventDefault={() => (selectedKeys = rows.map((r) => r[primaryKey]).filter((k) => !~selectedKeys.indexOf(k)))}>反选</button
+                >
+            </li>
+            <li></li>
+            <li>
+                <button class="btn btn-success btn-sm" on:click|preventDefault={() => (currentRow = emptyRow(columns)) && insertUI.showModal()}> 新增 </button>
+            </li>
+            <li><button class="btn btn-sm btn-info" on:click|preventDefault={() => updateUI.showModal()}> 编辑 </button></li>
+            <li><button class="btn btn-sm btn-error" on:click|preventDefault={() => deleteUI.showModal()}> 删除 </button></li>
+            <li>
+                <button class="btn btn-error btn-sm" disabled={!selectedKeys.length} on:click|preventDefault={() => multipleDeleteUI.showModal()}
+                    >删除 (多选)</button
+                >
+            </li>
+        {/if}
+        <li><button class="btn btn-sm btn-info" on:click|preventDefault={selectHandler}>刷新</button></li>
+        <slot name="operation" row={currentRow}></slot>
+    </ul>
+</ContextMenu>
 
 <slot name="dialog"></slot>
 

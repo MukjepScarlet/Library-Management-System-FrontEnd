@@ -1,8 +1,8 @@
 <script lang="ts">
     import { TABLES } from "$/utils/tables";
-    import { currentIdNumber, userInfo } from "$/utils/user";
+    import { userInfo } from "$/utils/user";
     import { link } from "svelte-spa-router";
-    import { fade, slide } from "svelte/transition";
+    import { fade } from "svelte/transition";
     import SidebarMenu from "./base/SidebarMenu.svelte";
 </script>
 
