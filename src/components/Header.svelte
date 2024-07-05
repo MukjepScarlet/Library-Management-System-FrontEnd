@@ -45,8 +45,8 @@
             <button class="btn btn-error" on:click={logout}>退出登录</button>
         {:else}
             <!-- 未登录 -->
-            <a class="btn btn-outline" href="/register/" use:link>注册</a>
-            <a class="btn btn-ghost" href="/login/" use:link>登录</a>
+            <a class="btn btn-primary" href="/register/" use:link>注册</a>
+            <a class="btn btn-secondary" href="/login/" use:link>登录</a>
         {/if}
     </div>
 </nav>

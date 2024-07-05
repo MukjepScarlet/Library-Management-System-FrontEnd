@@ -115,12 +115,12 @@
 
 <div class="flex flex-col justify-center gap-4 mt-4 mx-auto">
     <!-- select -->
-    <div class="flex justify-start lg:justify-center items-center bg-transparent gap-4">
+    <form class="flex justify-start lg:justify-center items-center bg-transparent gap-4" on:submit|preventDefault={selectHandler}>
         <!-- search by -->
         <div class="tooltip tooltip-bottom" data-tip="搜索依据">
             <select class="select select-bordered select-sm w-auto" bind:value={searchBy}>
                 {#each Object.entries(columns) as [key, column] (key)}
-                    <option class={column.isPrimary ? "font-semibold" : ""} value={key}>{column.renderName}</option>
+                    <option class:font-semibold={column.isPrimary} value={key}>{column.renderName}</option>
                 {/each}
             </select>
         </div>
@@ -132,10 +132,9 @@
                 class="grow"
                 placeholder="搜索..."
                 bind:value={query}
-                on:keypress={(e) => e.key === "Enter" && (e.preventDefault(), selectHandler())}
             />
             <div class="tooltip tooltip-bottom" data-tip="搜索">
-                <button class="btn btn-ghost btn-sm" on:click|preventDefault={selectHandler}>
+                <button class="btn btn-ghost btn-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70"
                         ><path
                             fill-rule="evenodd"
@@ -151,7 +150,7 @@
         <div class="form-control">
             <label class="cursor-pointer label gap-2">
                 <span class="label-text">精确搜索</span>
-                <input type="checkbox" class="checkbox checkbox-accent" bind:checked={fullMatch} />
+                <input type="checkbox" class="checkbox checkbox-primary" bind:checked={fullMatch} />
             </label>
         </div>
 
@@ -161,14 +160,14 @@
         <div class="form-control">
             <label class="cursor-pointer label gap-2">
                 <span class="label-text">降序排序</span>
-                <input type="checkbox" class="checkbox checkbox-primary" bind:checked={desc} />
+                <input type="checkbox" class="checkbox checkbox-secondary" bind:checked={desc} />
             </label>
         </div>
 
         <!-- sort by -->
 
-        <div class="tooltip tooltip-bottom tooltip-primary" data-tip="排序依据">
-            <select class="select select-bordered select-sm w-auto" bind:value={sortBy}>
+        <div class="tooltip tooltip-bottom" data-tip="排序依据">
+            <select class="select select-secondary select-bordered select-sm w-auto" bind:value={sortBy}>
                 {#each Object.entries(columns) as [key, column] (key)}
                     <option class:font-semibold={column.isPrimary} value={key}>{column.renderName}</option>
                 {/each}
@@ -235,7 +234,7 @@
                 </ul>
             </details>
         {/if}
-    </div>
+    </form>
 
     <!-- table -->
     <table class="table table-md lg:table-lg mx-auto" in:fade>
@@ -267,7 +266,9 @@
                                 {#if column.isPrimary}
                                     <label class="label cursor-pointer">
                                         <span class="label-text">{column.render?.(row[key])}</span>
-                                        <input type="checkbox" class="checkbox" bind:group={selectedKeys} value={row[key]} />
+                                        {#if allowModify}
+                                            <input type="checkbox" class="checkbox" bind:group={selectedKeys} value={row[key]} />
+                                        {/if}
                                     </label>
                                     <!-- 外键特殊处理 -->
                                 {:else if column.foreignKey !== undefined}

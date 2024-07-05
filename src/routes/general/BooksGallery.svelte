@@ -47,7 +47,7 @@
     };
 </script>
 
-<Table {columns} name="books">
+<Table name="books">
     <button slot="operation" let:row class="btn btn-success" disabled={row.num === 0} on:click={() => (currentRow = row) && borrowUI.showModal()}>
         借书
     </button>

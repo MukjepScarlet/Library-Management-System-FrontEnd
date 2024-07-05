@@ -73,7 +73,7 @@
             </label>
         </label>
 
-        <button class="btn btn-success" type="submit">登录</button>
+        <button class="btn btn-secondary" type="submit">登录</button>
 
         <div class="text-center">
             还没注册? &gt;&gt; <a href="/register/" class="link link-primary" use:link>注册</a>

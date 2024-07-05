@@ -40,7 +40,7 @@
         }
 
         NetUtils.register(studentIdNumber, password, email).then((json) => {
-            success(`注册成功, 你的借书证号是: ${json.data.idNumber}`, 10000);
+            success(`注册成功, 你的借书证号是: ${json.data.idNumber}, 请注意保存!`, 10000);
             login(json.data.idNumber);
         });
     };
@@ -118,7 +118,7 @@
         <button class="btn btn-primary" type="submit">注册</button>
 
         <div class="text-center">
-            已有账号? &gt;&gt; <a href="/login/" class="link link-primary" use:link>登录</a>
+            已有账号? &gt;&gt; <a href="/login/" class="link link-secondary" use:link>登录</a>
         </div>
     </form>
 </div>
