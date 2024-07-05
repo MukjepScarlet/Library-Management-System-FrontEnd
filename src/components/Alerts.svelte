@@ -21,18 +21,9 @@
 </script>
 
 <div class="fixed flex flex-col items-center gap-4 z-[1000] left-1/2 -translate-x-1/2 my-4 max-w-[75%]">
-    <!-- 读条 -->
-    {#if $alertQueue.length}
-        <progress class="progress w-full" value={$alertQueue[0].ttl} max={$alertQueue[0].time} transition:fade></progress>
-    {/if}
-
     <!-- 队列 -->
     {#each $alertQueue as alert (alert.createTime)}
-        <div
-            role="alert"
-            class="alert {alert.type ?? ''} w-fit"
-            transition:fade
-        >
+        <div role="alert" class="alert {alert.type ?? ''} w-fit" transition:fade>
             {#if alert.type === "alert-info"}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"
                     ><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
@@ -69,15 +60,17 @@
 
             <span>{alert.content}</span>
 
-            <!-- 左键关闭 右键清空 -->
-            <button
-                class="btn btn-sm btn-circle btn-ghost tooltip tooltip-right"
-                data-tip="左键关闭 / 右键清空"
-                on:click|preventDefault={() => (alert.ttl = 0)}
-                on:contextmenu|preventDefault={() => $alertQueue.forEach((it) => (it.ttl = 0))}
-            >
-                ✕
-            </button>
+            <div class="radial-progress" style:--value={(100 * alert.ttl) / alert.time} style="--size:2rem; --thickness:3px" role="progressbar">
+                <!-- 左键关闭 右键清空 -->
+                <button
+                    class="btn btn-sm btn-circle btn-ghost tooltip tooltip-right"
+                    data-tip="左键关闭 / 右键清空"
+                    on:click|preventDefault={() => (alert.ttl = 0)}
+                    on:contextmenu|preventDefault={() => $alertQueue.forEach((it) => (it.ttl = 0))}
+                >
+                    ✕
+                </button>
+            </div>
         </div>
     {/each}
 </div>
