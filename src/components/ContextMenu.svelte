@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { clamp } from "$/utils/utils";
     import { fly } from "svelte/transition";
 
     export let x: number = 0;
@@ -6,8 +7,6 @@
     export let visible: boolean = false;
 
     let ui: HTMLDivElement;
-
-    const clamp = (v: number, min: number, max: number) => (v < min ? min : v > max ? max : v);
 
     $: if (ui) {
         const rect = ui.getBoundingClientRect();

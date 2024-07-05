@@ -1,12 +1,13 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { type Columns, type Row, emptyRow, preprocess } from "$/utils/db";
+    import { success } from "$/utils/alert";
     import { NetUtils } from "$/utils/net";
+    import { clamp } from "$/utils/utils";
 
     import Dialog from "./base/Dialog.svelte";
     import EditDialog from "./base/EditDialog.svelte";
     import RowDetails from "./RowDetails.svelte";
-    import { warning, success } from "$/utils/alert";
     import { fade } from "svelte/transition";
     import { parseColumnName, TABLES, type TableName } from "$/utils/tables";
     import ContextMenu from "./ContextMenu.svelte";
@@ -31,18 +32,17 @@
     let desc = false;
     let sortBy = Object.keys(columns)[0];
 
+    // 每页显示项目书
     let count = 20;
 
     let currentPage = 1;
+    $: currentPage = clamp(currentPage, 1, maxPage);
 
     // 结果总数
     let total = 0;
 
-    $: startIndex = Math.max(0, Math.min((currentPage - 1) * count, total));
-    $: maxPage = count ? Math.ceil(total / count) : 0;
-
-    $: if (currentPage < 1) currentPage = 1;
-    else if (currentPage > maxPage) currentPage = maxPage;
+    $: startIndex = clamp((currentPage - 1) * count, 0, total);
+    $: maxPage = count && Math.ceil(total / count);
 
     export let selectAPI: (p: any, options: NetUtils.QueryOptions) => Promise<any> = NetUtils.query;
 
@@ -273,13 +273,13 @@
 <ContextMenu {...contextMenuState}>
     <ul class="menu m-2 p-2 gap-2 lg:w-48">
         {#if maxPage !== 1}
-            <li><button class="btn btn-sm" disabled={currentPage === 1} on:click|preventDefault={() => ((currentPage = 1), selectHandler())}>首页</button></li>
-            <li><button class="btn btn-sm" disabled={currentPage === 1} on:click|preventDefault={() => (currentPage--, selectHandler())}>上一页</button></li>
+            <li><button class="btn btn-sm" disabled={currentPage === 1} on:click|preventDefault={() => (currentPage = 1) && setTimeout(selectHandler, 0)}>首页</button></li>
+            <li><button class="btn btn-sm" disabled={currentPage === 1} on:click|preventDefault={() => --currentPage && setTimeout(selectHandler, 0)}>上一页</button></li>
             <li>
-                <button class="btn btn-sm" disabled={currentPage === maxPage} on:click|preventDefault={() => (currentPage++, selectHandler())}>下一页</button>
+                <button class="btn btn-sm" disabled={currentPage === maxPage} on:click|preventDefault={() => ++currentPage && setTimeout(selectHandler, 0)}>下一页</button>
             </li>
             <li>
-                <button class="btn btn-sm" disabled={currentPage === maxPage} on:click|preventDefault={() => ((currentPage = maxPage), selectHandler())}
+                <button class="btn btn-sm" disabled={currentPage === maxPage} on:click|preventDefault={() => ((currentPage = maxPage), setTimeout(selectHandler, 0))}
                     >末页</button
                 >
             </li>
