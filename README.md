@@ -34,7 +34,8 @@
     - *Dialog*: 最基本的弹窗, 包含一个关闭按钮和一些[插槽](https://svelte.dev/examples/slots).
     - *EditDialog*: 数据输入弹窗, 用于更新/插入数据.
     - *SidebarMenu*: 侧边栏使用的子菜单, 主要是动画作用.
-  - *Alerts*: 提示组件.
+  - *Alerts*: 提示组件. (可分离)
+  - *ContextMenu*: 右键菜单组件. (可分离)
   - *Header*: 顶栏组件.
   - *RowDetails*: 展示一行数据具体情况使用的组件.
   - *Sidebar*: 侧边栏组件.
