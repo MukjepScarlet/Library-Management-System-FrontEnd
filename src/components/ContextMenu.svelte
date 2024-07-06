@@ -6,13 +6,12 @@
     export let y: number = 0;
     export let visible: boolean = false;
 
-    let ui: HTMLDivElement;
+    let ui: HTMLDivElement | undefined = undefined;
 
-    $: if (ui) {
-        const rect = ui.getBoundingClientRect();
+    $: rect = ui?.getBoundingClientRect();
+    $: if (rect) {
         x = clamp(x, 0, window.innerWidth - rect.width);
         y = clamp(y, 0, window.innerHeight - rect.height);
-        // console.log(x, y);
     }
 </script>
 

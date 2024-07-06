@@ -5,6 +5,7 @@
     import { currentIdNumber, logout } from "$/utils/user";
 
     import UserEditDialog from "./UserEditDialog.svelte";
+    import { fly } from "svelte/transition";
 
     let ui: HTMLDialogElement;
 </script>
@@ -28,10 +29,10 @@
             <ul>
                 <li><a href="/" use:link>首页</a></li>
                 {#each $route as it (it)}
-                    <li>{it}</li>
+                    <li in:fly>{it}</li>
                 {/each}
                 {#if $current}
-                    <li class="font-semibold">{$current}</li>
+                    <li in:fly class="font-semibold">{$current}</li>
                 {/if}
             </ul>
         </div>
@@ -41,12 +42,12 @@
     <div class="flex justify-end gap-4">
         {#if $currentIdNumber}
             <!-- 登录 -->
-            <button class="btn btn-primary" on:click={() => ui.showModal()}>个人信息</button>
-            <button class="btn btn-error" on:click={logout}>退出登录</button>
+            <button in:fly class="btn btn-primary" on:click={() => ui.showModal()}>个人信息</button>
+            <button in:fly class="btn btn-error" on:click={logout}>退出登录</button>
         {:else}
             <!-- 未登录 -->
-            <a class="btn btn-primary" href="/register/" use:link>注册</a>
-            <a class="btn btn-secondary" href="/login/" use:link>登录</a>
+            <a in:fly class="btn btn-primary" href="/register/" use:link>注册</a>
+            <a in:fly class="btn btn-secondary" href="/login/" use:link>登录</a>
         {/if}
     </div>
 </nav>
