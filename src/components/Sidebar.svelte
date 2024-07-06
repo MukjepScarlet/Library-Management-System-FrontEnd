@@ -2,7 +2,7 @@
     import { TABLES } from "$/utils/tables";
     import { userInfo } from "$/utils/user";
     import { link } from "svelte-spa-router";
-    import { fade } from "svelte/transition";
+    import { slide } from "svelte/transition";
     import SidebarMenu from "./base/SidebarMenu.svelte";
 </script>
 
@@ -27,7 +27,7 @@
             <!-- 菜单 -->
             <ul class="menu px-4 py-4">
                 <!-- 游客 -->
-                <li in:fade>
+                <li transition:slide>
                     <SidebarMenu>
                         <svelte:fragment slot="summary">
                             <img
@@ -54,7 +54,7 @@
 
                 {#if $userInfo}
                     <!-- 用户 -->
-                    <li in:fade>
+                    <li transition:slide>
                         <SidebarMenu>
                             <svelte:fragment slot="summary">
                                 <img
@@ -76,7 +76,7 @@
 
                     <!-- 管理 -->
                     {#if ~~$userInfo.roleId >= 2}
-                        <li in:fade>
+                        <li transition:slide>
                             <SidebarMenu>
                                 <svelte:fragment slot="summary">
                                     <img

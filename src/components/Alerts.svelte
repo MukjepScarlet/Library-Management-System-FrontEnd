@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onDestroy, onMount } from "svelte";
-    import { fade } from "svelte/transition";
+    import { slide } from "svelte/transition";
 
     import { alertQueue } from "$/utils/alert";
 
@@ -20,10 +20,10 @@
     });
 </script>
 
-<div class="fixed flex flex-col items-center gap-4 z-[1000] left-1/2 -translate-x-1/2 my-4 max-w-[75%]">
+<div class="fixed flex flex-col items-center z-[1000] left-1/2 -translate-x-1/2 lg:max-w-[75%]">
     <!-- 队列 -->
     {#each $alertQueue as alert (alert.createTime)}
-        <div role="alert" class="alert {alert.type ?? ''} w-fit" transition:fade>
+        <div role="alert" class="alert {alert.type ?? ''} w-fit mt-4" transition:slide>
             {#if alert.type === "alert-info"}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"
                     ><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
