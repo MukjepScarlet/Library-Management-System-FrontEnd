@@ -2,7 +2,7 @@
     import EditDialog from "./base/EditDialog.svelte";
 
     import { preprocess } from "$/utils/db";
-    import { NetUtils } from "$/utils/net";
+    import NetUtils from "$/utils/net";
     import { currentIdNumber, userInfo } from "$/utils/user";
     import { TABLES } from "$/utils/tables";
     import { success } from "$/utils/alert";

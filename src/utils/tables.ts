@@ -110,5 +110,7 @@ export const TABLES = {
     },
 }
 
+export default TABLES
+
 /** userId -> user_id */
 export const parseColumnName = (str: string) => str.replace(/([A-Z])/g, '_$1').toLowerCase();

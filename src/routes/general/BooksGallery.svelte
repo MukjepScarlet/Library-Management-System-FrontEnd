@@ -8,7 +8,7 @@
 
     import { route, current } from "$/utils/utils";
     import { TABLES } from "$/utils/tables";
-    import { NetUtils } from "$/utils/net";
+    import NetUtils from "$/utils/net";
     import { currentIdNumber, userInfo } from "$/utils/user";
 
     $route = ["通用"];

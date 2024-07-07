@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import { type Columns, type Row, emptyRow, preprocess } from "$/utils/db";
     import { success } from "$/utils/alert";
-    import { NetUtils } from "$/utils/net";
+    import NetUtils, { type QueryOptions } from "$/utils/net";
     import { clamp } from "$/utils/utils";
 
     import Dialog from "./base/Dialog.svelte";
@@ -44,7 +44,7 @@
     $: startIndex = clamp((currentPage - 1) * count, 0, total);
     $: maxPage = count && Math.ceil(total / count);
 
-    export let selectAPI: (p: any, options: NetUtils.QueryOptions) => Promise<any> = NetUtils.query;
+    export let selectAPI: (p: any, options: QueryOptions) => Promise<any> = NetUtils.query;
 
     export let selectParam: string = name;
 

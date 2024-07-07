@@ -3,8 +3,8 @@
     import { fade } from "svelte/transition";
 
     import { route, current } from "$/utils/utils";
-    import { error, info, success } from "$/utils/alert";
-    import { NetUtils } from "$/utils/net";
+    import { error, success } from "$/utils/alert";
+    import NetUtils from "$/utils/net";
     import { login } from "$/utils/user";
 
     $route = ["个人"];
@@ -41,7 +41,7 @@
 
         NetUtils.register(studentIdNumber, password, email).then((json) => {
             success(`注册成功, 你的借书证号是: ${json.data.idNumber}, 请注意保存!`, 10000);
-            login(json.data.idNumber);
+            login(json.data.idNumber as string);
         });
     };
 </script>

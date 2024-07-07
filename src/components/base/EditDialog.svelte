@@ -4,7 +4,7 @@
     import DateTimeInput from "./DateTimeInput.svelte";
 
     import type { Row, Columns } from "$/utils/db";
-    import { NetUtils } from "$/utils/net";
+    import NetUtils from "$/utils/net";
     import { error } from "$/utils/alert";
 
     export let columns: Columns;

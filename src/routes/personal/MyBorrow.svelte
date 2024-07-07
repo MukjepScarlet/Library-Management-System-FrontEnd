@@ -4,7 +4,7 @@
     import Table from "$/components/Table.svelte";
     import { error, success } from "$/utils/alert";
     import type { Row } from "$/utils/db";
-    import { NetUtils } from "$/utils/net";
+    import NetUtils from "$/utils/net";
     import { TABLES } from "$/utils/tables";
     import { currentIdNumber, userInfo } from "$/utils/user";
 
