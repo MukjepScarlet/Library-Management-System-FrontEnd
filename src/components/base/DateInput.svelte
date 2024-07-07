@@ -9,10 +9,11 @@
     let value: string;
 
     const input = (date: Date) => {
-        let year = date.getFullYear();
-        let month = ("0" + (date.getMonth() + 1)).slice(-2);
-        let day = ("0" + date.getDate()).slice(-2);
-        value = year + "-" + month + "-" + day;
+        value = date
+            .toLocaleDateString()
+            .split("/")
+            .map((it) => it.padStart(2, "0"))
+            .join("-");
     };
 
     const output = (date: string) => {
@@ -23,4 +24,4 @@
     $: output(value);
 </script>
 
-<input type="date" bind:value={value} {max} class="{_class}" {readonly}/>
+<input type="date" bind:value={value} {max} class={_class} {readonly} />

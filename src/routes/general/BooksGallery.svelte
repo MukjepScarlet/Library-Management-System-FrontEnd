@@ -9,7 +9,7 @@
     import { route, current } from "$/utils/utils";
     import { TABLES } from "$/utils/tables";
     import NetUtils from "$/utils/net";
-    import { currentIdNumber, userInfo } from "$/utils/user";
+    import { userInfo } from "$/utils/user";
 
     $route = ["通用"];
     $current = "书籍";
@@ -26,7 +26,7 @@
             return;
         }
 
-        if (!$currentIdNumber) {
+        if (!$userInfo) {
             error("先登录!");
             return;
         }
@@ -38,9 +38,10 @@
 
         const newBorrow = emptyRow(TABLES.borrowinfo.columns);
         newBorrow.isbn = currentRow.isbn;
-        newBorrow.userId = $userInfo!.userId;
+        newBorrow.userId = $userInfo.userId;
         newBorrow.beginTime = new Date();
         newBorrow.returnTime = new Date();
+        // 默认7天归还
         newBorrow.returnTime.setDate(newBorrow.beginTime.getDate() + 7);
 
         NetUtils.add("borrowinfo", newBorrow).then(() => success("借阅成功!"));

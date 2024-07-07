@@ -1,7 +1,7 @@
-import { error } from "./alert";
-import type { Row } from "./db";
+import { error } from "./alert"
+import type { Row } from "./db"
 
-const DOMAIN = 'http://localhost:8081/';
+const DOMAIN = 'http://localhost:8081/'
 const makeFullURL = (api: string) => new URL('api' + api, DOMAIN)
 
 export interface QueryOptions {
@@ -45,15 +45,8 @@ const checkIfSucceeded = (response: Response) => response.json().then((json) => 
 
 const formatData = (data: Record<string, any>) =>
     Object.fromEntries(Object.entries(data).map(([key, value]) => {
-        if (value instanceof Date) {
-            const year = value.getFullYear();
-            const month = ('0' + (value.getMonth() + 1)).slice(-2);
-            const day = ('0' + value.getDate()).slice(-2);
-            const hours = ('0' + value.getHours()).slice(-2);
-            const minutes = ('0' + value.getMinutes()).slice(-2);
-            const seconds = ('0' + value.getSeconds()).slice(-2);
-            value = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-        }
+        if (value instanceof Date)
+            value = value.toLocaleString();
 
         return [key, value];
     }));
@@ -109,7 +102,7 @@ export default {
         }).then(checkIfSucceeded)
     },
 
-    login: function(idNumber: string, password: string): Promise<QueryResult> {
+    login: function (idNumber: string, password: string): Promise<QueryResult> {
         return fetch(makeFullURL(`/login/`), {
             headers: {
                 "Content-Type": "application/json;charset=UTF-8"

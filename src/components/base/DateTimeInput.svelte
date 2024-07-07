@@ -10,13 +10,16 @@
     let timeValue: string;
 
     const inputHandler = (date: Date) => {
-        let year = date.getFullYear();
-        let month = ("0" + (date.getMonth() + 1)).slice(-2);
-        let day = ("0" + date.getDate()).slice(-2);
-        dateValue = year + "-" + month + "-" + day;
-        let hour = ("0" + date.getHours()).slice(-2);
-        let minute = ("0" + date.getMinutes()).slice(-2);
-        timeValue = hour + ":" + minute;
+        dateValue = date
+            .toLocaleDateString()
+            .split("/")
+            .map((it) => it.padStart(2, "0"))
+            .join("-");
+        timeValue = date
+            .toLocaleTimeString()
+            .split(":")
+            .map((it) => it.padStart(2, "0"))
+            .join(":");
     };
 
     const outputHandler = (date: string, time: string) => {
