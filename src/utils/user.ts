@@ -3,7 +3,7 @@ import { info } from "./alert";
 import { preprocess, type Row } from "./db";
 import { TABLES } from "./tables";
 import { replace } from "svelte-spa-router";
-import { NetUtils } from "./net";
+import NetUtils from "./net";
 
 export const currentIdNumber = writable<string | null>(null);
 
