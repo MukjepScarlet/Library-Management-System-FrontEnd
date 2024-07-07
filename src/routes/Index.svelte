@@ -6,7 +6,7 @@
     import { preprocess, type Row } from "$/utils/db";
     import { fade } from "svelte/transition";
     import { TABLES } from "$/utils/tables";
-    import { NetUtils } from "$/utils/net";
+    import NetUtils from "$/utils/net";
     import { userInfo } from "$/utils/user";
     import { randomSaying } from "$/utils/utils";
 

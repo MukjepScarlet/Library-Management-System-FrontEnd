@@ -4,7 +4,7 @@
 
     import { route, current } from "$/utils/utils";
     import { error, success } from "$/utils/alert";
-    import { NetUtils } from "$/utils/net";
+    import NetUtils from "$/utils/net";
     import { login } from "$/utils/user";
 
     $route = ["个人"];
