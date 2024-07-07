@@ -7,7 +7,6 @@
     import { fade } from "svelte/transition";
     import { TABLES } from "$/utils/tables";
     import { NetUtils } from "$/utils/net";
-    import { error } from "$/utils/alert";
     import { userInfo } from "$/utils/user";
     import { randomSaying } from "$/utils/utils";
 
@@ -170,11 +169,9 @@
                 </div>
 
                 {#if notice}
-                    <!-- {#key currentIndex} -->
                     <strong in:fade>{notice.title}</strong>
 
                     <pre in:fade class="font-sans h-full">{notice.content}</pre>
-                    <!-- {/key} -->
 
                     <div class="flex justify-between">
                         <ul class="text-sm text-neutral">

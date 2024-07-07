@@ -9,6 +9,8 @@
     import { currentIdNumber, userInfo } from "$/utils/user";
 
     import { route, current } from "$/utils/utils";
+    import { onMount } from "svelte";
+    import { push } from "svelte-spa-router";
 
     $route = ["个人"];
     $current = "借阅";
@@ -16,6 +18,13 @@
     const columns = TABLES.borrowinfo.columns;
 
     let currentRow: Row<typeof columns> | undefined;
+
+    onMount(() => {
+        if (!$userInfo) {
+            error("先登录!");
+            push("/");
+        }
+    });
 
     let returnUI: HTMLDialogElement;
 
@@ -30,7 +39,7 @@
             return;
         }
 
-        NetUtils.remove('borrowinfo', [currentRow.id]).then(() => {
+        NetUtils.remove("borrowinfo", [currentRow.id]).then(() => {
             success("归还成功!");
             // TODO: 刷新表格
         });
