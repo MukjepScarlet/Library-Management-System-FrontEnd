@@ -9,4 +9,4 @@
     export let value: string;
 </script>
 
-<textarea bind:value class={_class} class:input-primary={column.isPrimary} class:input-secondary={column.foreignKey} readonly={column.isImmutable} />
+<textarea bind:value class={_class} class:input-primary={column.isPrimary} class:input-secondary={column.foreignKey} maxlength={column.maxLength} readonly={column.isImmutable} />

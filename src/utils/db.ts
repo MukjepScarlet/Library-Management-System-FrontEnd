@@ -51,6 +51,7 @@ interface ColumnOptions<T extends SQLType> {
     isPrimary?: boolean;
     isImmutable?: boolean;
     isNullable?: boolean;
+    maxLength?: number;
     foreignKey?: { tableName: string, key: string };
 }
 
@@ -70,6 +71,8 @@ export class Column<T extends SQLType> {
     public isImmutable: boolean;
     /** 可空? */
     public isNullable: boolean;
+    /** 最大长度? */
+    public maxLength: number;
     /** 外键? */
     public foreignKey?: { tableName: string, key: string };
 
@@ -88,6 +91,7 @@ export class Column<T extends SQLType> {
         this.isPrimary = options.isPrimary ?? false;
         this.isImmutable = options.isImmutable ?? false;
         this.isNullable = options.isNullable ?? false;
+        this.maxLength = options.maxLength ?? 65535;
         this.foreignKey = options.foreignKey;
     }
 }
