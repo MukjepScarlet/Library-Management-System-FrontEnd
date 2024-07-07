@@ -55,9 +55,17 @@
         borrowCount: {
             name: "你的借阅",
             n: 0,
-            render: $userInfo !== undefined,
+            render: false,
         },
     };
+
+    $: if ($userInfo)
+        NetUtils.myBorrow($userInfo.userId as unknown as number, {
+            count: 0,
+        }).then((json) => {
+            stats.borrowCount.n = json.data.count;
+            stats.borrowCount.render = true;
+        });
 
     onMount(() => {
         NetUtils.query("notice", {
@@ -133,12 +141,11 @@
             });
         });
 
-        if ($userInfo)
-            NetUtils.myBorrow($userInfo.userId as unknown as number, {
-                count: 0,
-            }).then((json) => {
-                stats.borrowCount.n = json.data.count;
-            });
+        NetUtils.query("users", {
+            count: 0,
+        }).then((json) => {
+            stats.userCount.n = json.data.count;
+        });
 
         carouselInterval = setInterval(() => {
             enableCarousel && notices.length && currentIndex++;
@@ -193,18 +200,15 @@
     {/if}
 
     <div class="stats shadow-lg bg-base-100 col-span-2">
-        <!-- TODO: 个人借阅不会响应式更新 -->
-        {#key $userInfo}
-            {#each Object.entries(stats) as [key, { name, n, render }] (key)}
-                {#if render}
-                    <div class="stat place-items-center">
-                        <div class="stat-title">{name}</div>
-                        <div class="stat-value">{n}</div>
-                        <div class="stat-desc">{randomSaying()}</div>
-                    </div>
-                {/if}
-            {/each}
-        {/key}
+        {#each Object.entries(stats) as [key, { name, n, render }] (key)}
+            {#if render}
+                <div class="stat place-items-center">
+                    <div class="stat-title">{name}</div>
+                    <div class="stat-value">{n}</div>
+                    <div class="stat-desc">{randomSaying()}</div>
+                </div>
+            {/if}
+        {/each}
     </div>
 
     <div class="card justify-center items-center shadow-lg bg-base-100 h-[50vh]" bind:this={container1}></div>

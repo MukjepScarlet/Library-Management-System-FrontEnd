@@ -1,12 +1,15 @@
 <script lang="ts">
     import type { Columns, Row } from "$/utils/db";
 
+    export { _class as class };
+    let _class = "";
+
     export let columns: Columns;
 
     export let row: Row<typeof columns> | undefined;
 </script>
 
-<div class="grid grid-cols-3 gap-4">
+<div class={_class}>
     {#if row}
         {#each Object.entries(columns) as [key, column] (key)}
             <div class={column.type === "TEXT" ? "col-span-3 max-h-[50vh]" : ""}>

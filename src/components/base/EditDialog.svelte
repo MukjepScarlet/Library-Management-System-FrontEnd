@@ -39,7 +39,7 @@
 <!-- 通用编辑屏幕 -->
 <Dialog bind:ui {title} {style}>
     <svelte:fragment slot="content">
-        <Editor bind:row {columns} />
+        <Editor class="grid grid-cols-3 gap-4" bind:row {columns} />
     </svelte:fragment>
 
     <div slot="action" class="modal-action items-center">
