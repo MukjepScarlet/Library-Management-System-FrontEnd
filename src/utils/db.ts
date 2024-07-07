@@ -1,5 +1,9 @@
 import './extensions/string.extensions';
-import type { TableName } from './tables';
+import type DateInput from '$/components/editor/inputs/DateInput.svelte';
+import type DateTimeInput from '$/components/editor/inputs/DateTimeInput.svelte';
+import type NumberInput from '$/components/editor/inputs/NumberInput.svelte';
+import type StringInput from '$/components/editor/inputs/StringInput.svelte';
+import type TextInput from '$/components/editor/inputs/TextInput.svelte';
 
 /**
  * 用到的合法SQL数据类型
@@ -50,6 +54,8 @@ interface ColumnOptions<T extends SQLType> {
     foreignKey?: { tableName: string, key: string };
 }
 
+type Input = typeof DateInput | typeof DateTimeInput | typeof NumberInput | typeof StringInput | typeof TextInput;
+
 /**
  * 表格的表头(列)信息
  */
@@ -73,7 +79,7 @@ export class Column<T extends SQLType> {
         /** SQL数据类型 可以自动推导泛型 */
         public type: T,
         /** 修改规则 */
-        public editRule: EditRule<T>,
+        public editor: Input,
         /** 其他参数 */
         options: ColumnOptions<T> = {}
     ) {

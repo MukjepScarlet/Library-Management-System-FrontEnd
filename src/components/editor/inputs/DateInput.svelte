@@ -1,10 +1,12 @@
 <script lang="ts">
+    import type { Column } from "$/utils/db";
+
     export const max = "9999-12-31";
     export { _class as class, _value as value };
     let _class = "";
-    let _value: Date | any; // ...
+    let _value: Date;
 
-    export let readonly = false;
+    export let column: Column<any>;
 
     let value: string;
 
@@ -24,4 +26,4 @@
     $: output(value);
 </script>
 
-<input type="date" bind:value={value} {max} class={_class} {readonly} />
+<input type="date" bind:value={value} {max} class={_class} class:input-primary={column.isPrimary} class:input-secondary={column.foreignKey} readonly={column.isImmutable} />

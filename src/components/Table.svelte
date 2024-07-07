@@ -11,6 +11,7 @@
     import { fade } from "svelte/transition";
     import { parseColumnName, TABLES, type TableName } from "$/utils/tables";
     import ContextMenu from "./ContextMenu.svelte";
+    import { flip } from "svelte/animate";
 
     /** 表名 */
     export let name: TableName;
@@ -138,7 +139,7 @@
         <label class="input input-bordered input-sm flex items-center gap-2 pr-0">
             <input type="text" class="grow" placeholder="搜索..." bind:value={query} />
             <div class="tooltip tooltip-bottom" data-tip="搜索">
-                <button class="btn btn-ghost btn-sm">
+                <button class="btn btn-ghost btn-sm" type="submit">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70"
                         ><path
                             fill-rule="evenodd"
@@ -244,7 +245,7 @@
                                     >
                                         {column.render(row[key])}
                                     </button>
-                                {:else if column.editRule === "textarea"}
+                                {:else if column.type === 'TEXT'}
                                     <!-- 长文本特殊处理: 隐藏过长内容 -->
                                     <span class="tooltip" data-tip={row[key]}>
                                         {column.render(row[key])}
@@ -273,14 +274,26 @@
 <ContextMenu {...contextMenuState}>
     <ul class="menu m-2 p-2 gap-2 lg:w-48">
         {#if maxPage !== 1}
-            <li><button class="btn btn-sm" disabled={currentPage === 1} on:click|preventDefault={() => (currentPage = 1) && setTimeout(selectHandler, 0)}>首页</button></li>
-            <li><button class="btn btn-sm" disabled={currentPage === 1} on:click|preventDefault={() => --currentPage && setTimeout(selectHandler, 0)}>上一页</button></li>
             <li>
-                <button class="btn btn-sm" disabled={currentPage === maxPage} on:click|preventDefault={() => ++currentPage && setTimeout(selectHandler, 0)}>下一页</button>
+                <button class="btn btn-sm" disabled={currentPage === 1} on:click|preventDefault={() => (currentPage = 1) && setTimeout(selectHandler, 0)}
+                    >首页</button
+                >
             </li>
             <li>
-                <button class="btn btn-sm" disabled={currentPage === maxPage} on:click|preventDefault={() => ((currentPage = maxPage), setTimeout(selectHandler, 0))}
-                    >末页</button
+                <button class="btn btn-sm" disabled={currentPage === 1} on:click|preventDefault={() => --currentPage && setTimeout(selectHandler, 0)}
+                    >上一页</button
+                >
+            </li>
+            <li>
+                <button class="btn btn-sm" disabled={currentPage === maxPage} on:click|preventDefault={() => ++currentPage && setTimeout(selectHandler, 0)}
+                    >下一页</button
+                >
+            </li>
+            <li>
+                <button
+                    class="btn btn-sm"
+                    disabled={currentPage === maxPage}
+                    on:click|preventDefault={() => ((currentPage = maxPage), setTimeout(selectHandler, 0))}>末页</button
                 >
             </li>
             <li></li>
