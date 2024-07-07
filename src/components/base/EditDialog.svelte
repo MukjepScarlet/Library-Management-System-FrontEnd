@@ -25,8 +25,10 @@
         for (const [key, { renderName, foreignKey }] of Object.entries(columns)) {
             if (!foreignKey) continue;
 
-            await NetUtils.query(foreignKey!.tableName, {
-                searchBy: foreignKey!.key,
+            if (!flag) break;
+
+            await NetUtils.query(foreignKey.tableName, {
+                searchBy: foreignKey.key,
                 query: row[key],
                 match: "eq",
             }).then((json) => json.data.count || ((flag = false), error(`外键 ${renderName} (${key}) 找不到对应值!`, 5000)));
