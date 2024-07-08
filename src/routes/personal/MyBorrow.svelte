@@ -3,9 +3,9 @@
     import RowDetails from "$/components/RowDetails.svelte";
     import Table from "$/components/Table.svelte";
     import { error, success } from "$/utils/alert";
-    import type { Row } from "$/utils/db";
+    import type { Column, Row } from "$/utils/db";
     import NetUtils from "$/utils/net";
-    import { TABLES } from "$/utils/tables";
+    import { TABLES } from "$/utils/db";
     import { currentIdNumber, userInfo } from "$/utils/user";
 
     import { route, current } from "$/utils/utils";
@@ -28,6 +28,8 @@
 
     let returnUI: HTMLDialogElement;
 
+    let selectTrigger = false;
+
     const returnHandler = () => {
         if (!currentRow) {
             error("先选中一条借阅信息!");
@@ -41,13 +43,15 @@
 
         NetUtils.remove("borrowinfo", [currentRow.id]).then(() => {
             success("归还成功!");
-            // TODO: 刷新表格
+            selectTrigger = true;
         });
     };
+
+    const setRow = (row: Row<{ [key: string]: Column<any> }> | undefined) => (currentRow = row as Row<typeof columns>);
 </script>
 
-<Table name="borrowinfo" selectAPI={NetUtils.myBorrow} selectParam={$userInfo?.userId}>
-    <button slot="operation" let:row class="btn btn-sm btn-primary" on:click={() => (currentRow = row) && returnUI.showModal()}> 归还 </button>
+<Table name="borrowinfo" selectAPI={NetUtils.myBorrow} selectParam={$userInfo?.userId?.toString()} bind:selectTrigger>
+    <button slot="operation" let:row class="btn btn-sm btn-primary" on:click={() => setRow(row) && returnUI.showModal()}> 归还 </button>
 
     <Dialog slot="dialog" bind:ui={returnUI} title="操作确认: 还书">
         <div slot="content">

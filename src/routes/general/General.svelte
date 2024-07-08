@@ -1,7 +1,7 @@
 <script lang="ts">
     import Table from "$/components/Table.svelte";
 
-    import { TABLES, type TableName } from "$/utils/tables";
+    import { TABLES, type TableName } from "$/utils/db";
 
     import { route, current } from "$/utils/utils";
 

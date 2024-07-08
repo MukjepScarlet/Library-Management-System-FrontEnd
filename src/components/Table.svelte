@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { type Columns, type Row, emptyRow, preprocess } from "$/utils/db";
+    import DBUtils, { TABLES, type TableName, Column, type Columns, type Row } from "$/utils/db";
     import { success } from "$/utils/alert";
     import NetUtils, { type QueryOptions } from "$/utils/net";
     import { clamp } from "$/utils/utils";
@@ -9,29 +9,31 @@
     import EditDialog from "./base/EditDialog.svelte";
     import RowDetails from "./RowDetails.svelte";
     import { fade } from "svelte/transition";
-    import { parseColumnName, TABLES, type TableName } from "$/utils/tables";
     import ContextMenu from "./ContextMenu.svelte";
-    import { flip } from "svelte/animate";
 
     /** 表名 */
     export let name: TableName;
 
-    /** 表头 */
-    const columns: Columns = TABLES[name].columns;
-    $: primaryKey = Object.keys(columns).find((key) => columns[key].isPrimary)!;
+    type RowType = Row<typeof columns>;
 
-    let rows: Row<typeof columns>[] = [];
+    /** 表头 */
+    const columns = TABLES[name].columns as { [key: string]: Column<any> };
+    const keys = Object.keys(columns);
+
+    $: primaryKey = keys.find((key) => columns[key].isPrimary)!;
+
+    let rows: RowType[] = [];
 
     export let allowModify = false;
 
     // 顶栏表单控制
 
     let query = "";
-    let searchBy = Object.keys(columns)[0];
+    let searchBy = keys[0];
     let fullMatch = true;
 
     let desc = false;
-    let sortBy = Object.keys(columns)[0];
+    let sortBy = keys[0];
 
     // 每页显示项目书
     let count = 20;
@@ -49,21 +51,28 @@
 
     export let selectParam: string = name;
 
+    /** 外部(父组件)调用刷新 */
+    export let selectTrigger: boolean = false;
+    $: if (selectTrigger) {
+        selectHandler();
+        selectTrigger = false;
+    }
+
     const selectHandler = () => {
         currentRow = undefined;
         selectedKeys.length = 0;
 
         selectAPI(selectParam, {
-            searchBy: parseColumnName(searchBy),
+            searchBy: DBUtils.parseColumnName(searchBy),
             query,
             match: fullMatch ? "eq" : "like",
-            sortBy: parseColumnName(sortBy),
+            sortBy: DBUtils.parseColumnName(sortBy),
             order: desc ? "desc" : "asc",
             start: startIndex,
             count,
         }).then((json) => {
             total = json.data.count;
-            rows = preprocess(columns, json.data.data);
+            rows = DBUtils.preprocess(columns as Columns<any>, json.data.data);
         });
     };
 
@@ -71,14 +80,17 @@
     let foreignKeyUI: HTMLDialogElement;
     let currentColumn: keyof typeof columns | undefined;
     $: currentForeignKey = currentColumn ? columns[currentColumn].foreignKey : undefined;
-    $: currentForeignColumns = currentForeignKey ? TABLES[currentForeignKey.tableName as TableName].columns : undefined;
+    $: currentForeignColumns = currentForeignKey ? (TABLES[currentForeignKey.tableName as TableName].columns as Columns<any>) : undefined;
 
     // 行操作
     let deleteUI: HTMLDialogElement;
     let updateUI: HTMLDialogElement;
     let insertUI: HTMLDialogElement;
 
-    let currentRow: Row<typeof columns> | undefined;
+    let currentRow: RowType | undefined;
+    const createRow = () => {
+        currentRow = DBUtils.emptyRow(columns as Columns<any>);
+    };
 
     // 批量操作
     let multipleDeleteUI: HTMLDialogElement;
@@ -130,7 +142,7 @@
         <div class="tooltip tooltip-bottom" data-tip="搜索依据">
             <select class="select select-bordered select-sm w-auto" bind:value={searchBy}>
                 {#each Object.entries(columns) as [key, column] (key)}
-                    <option class:font-semibold={column.isPrimary} value={key}>{column.renderName}</option>
+                    <option class:font-semibold={column.isPrimary} value={key}>{column.name}</option>
                 {/each}
             </select>
         </div>
@@ -174,7 +186,7 @@
         <div class="tooltip tooltip-bottom" data-tip="排序依据">
             <select class="select select-secondary select-bordered select-sm w-auto" bind:value={sortBy}>
                 {#each Object.entries(columns) as [key, column] (key)}
-                    <option class:font-semibold={column.isPrimary} value={key}>{column.renderName}</option>
+                    <option class:font-semibold={column.isPrimary} value={key}>{column.name}</option>
                 {/each}
             </select>
         </div>
@@ -210,11 +222,11 @@
                     {#if column.foreignKey}
                         <th>
                             <span class="tooltip tooltip-bottom" data-tip="映射到{column.foreignKey.tableName}:{column.foreignKey.key}的外键">
-                                {column.renderName}
+                                {column.name}
                             </span>
                         </th>
                     {:else}
-                        <th><span>{column.renderName}</span></th>
+                        <th><span>{column.name}</span></th>
                     {/if}
                 {/each}
             </tr>
@@ -245,7 +257,7 @@
                                     >
                                         {column.render(row[key])}
                                     </button>
-                                {:else if column.type === 'TEXT'}
+                                {:else if column.type === "TEXT"}
                                     <!-- 长文本特殊处理: 隐藏过长内容 -->
                                     <span class="tooltip" data-tip={row[key]}>
                                         {column.render(row[key])}
@@ -309,7 +321,7 @@
             </li>
             <li></li>
             <li>
-                <button class="btn btn-success btn-sm" on:click|preventDefault={() => (currentRow = emptyRow(columns)) && insertUI.showModal()}> 新增 </button>
+                <button class="btn btn-success btn-sm" on:click|preventDefault={() => (createRow(), insertUI.showModal())}> 新增 </button>
             </li>
             <li><button class="btn btn-sm btn-info" on:click|preventDefault={() => updateUI.showModal()}> 编辑 </button></li>
             <li><button class="btn btn-sm btn-error" on:click|preventDefault={() => deleteUI.showModal()}> 删除 </button></li>
@@ -330,13 +342,13 @@
 <Dialog bind:ui={foreignKeyUI} title="外键详情: 表 {name}">
     <div slot="content">
         {#if currentRow && currentColumn && currentForeignKey && currentForeignColumns}
-            <p class="py-4">选中的行:&nbsp;<strong>{columns[primaryKey].renderName}</strong>&nbsp;&equals;&nbsp;{currentRow?.[primaryKey]}</p>
+            <p class="py-4">选中的行:&nbsp;<strong>{columns[primaryKey].name}</strong>&nbsp;&equals;&nbsp;{currentRow?.[primaryKey]}</p>
 
-            {#await NetUtils.query(currentForeignKey.tableName, { searchBy: parseColumnName(currentForeignKey.key), query: currentRow[currentColumn] })}
+            {#await NetUtils.query(currentForeignKey.tableName, { searchBy: DBUtils.parseColumnName(currentForeignKey.key), query: currentRow[currentColumn] })}
                 <progress class="progress w-full"></progress>
                 <p class="py-4 mx-auto font-serif font-semibold">少女祈祷中...</p>
             {:then json}
-                <RowDetails row={preprocess(currentForeignColumns, json.data.data)[0]} columns={currentForeignColumns} showKey={allowModify} />
+                <RowDetails row={DBUtils.preprocess(currentForeignColumns, json.data.data)[0]} columns={currentForeignColumns} showKey={allowModify} />
             {:catch error}
                 <p>加载失败...</p>
             {/await}
@@ -355,12 +367,12 @@
     <Dialog bind:ui={multipleDeleteUI} title="操作确认: 删除多项">
         <div slot="content">
             <p class="py-4">确认删除以下的行?</p>
-            <strong>{columns[primaryKey].renderName}</strong>
+            <strong>{columns[primaryKey].name}</strong>
             <ul>
                 {#each selectedKeys as key (key)}
                     <li>
                         <details class="dropdown">
-                            <summary class="m-1 hover:underline">{columns[primaryKey].render?.(key)}</summary>
+                            <summary class="m-1 hover:underline">{columns[primaryKey].render(key)}</summary>
                             <RowDetails row={rows.find((r) => r[primaryKey] === key)} {columns} showKey />
                         </details>
                     </li>

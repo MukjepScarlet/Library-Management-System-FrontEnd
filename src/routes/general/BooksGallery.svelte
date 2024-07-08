@@ -3,18 +3,18 @@
     import Table from "$/components/Table.svelte";
     import RowDetails from "$/components/RowDetails.svelte";
 
-    import { emptyRow, type Columns, type Row } from "$/utils/db";
+    import DBUtils, { Column, type Row } from "$/utils/db";
     import { error, success } from "$/utils/alert";
 
     import { route, current } from "$/utils/utils";
-    import { TABLES } from "$/utils/tables";
+    import { TABLES } from "$/utils/db";
     import NetUtils from "$/utils/net";
     import { userInfo } from "$/utils/user";
 
     $route = ["通用"];
     $current = "书籍";
 
-    const columns: Columns = TABLES.books.columns;
+    const columns = TABLES.books.columns;
 
     let currentRow: Row<typeof columns> | undefined;
 
@@ -36,7 +36,7 @@
             return;
         }
 
-        const newBorrow = emptyRow(TABLES.borrowinfo.columns);
+        const newBorrow = DBUtils.emptyRow<"borrowinfo">(TABLES.borrowinfo.columns);
         newBorrow.isbn = currentRow.isbn;
         newBorrow.userId = $userInfo.userId;
         newBorrow.beginTime = new Date();
@@ -46,12 +46,12 @@
 
         NetUtils.add("borrowinfo", newBorrow).then(() => success("借阅成功!"));
     };
+
+    const setRow = (row: Row<{ [key: string]: Column<any> }> | undefined) => (currentRow = row as Row<typeof columns>);
 </script>
 
 <Table name="books">
-    <button slot="operation" let:row class="btn btn-sm btn-primary" disabled={!row?.num} on:click={() => (currentRow = row) && borrowUI.showModal()}>
-        借书
-    </button>
+    <button slot="operation" let:row class="btn btn-sm btn-primary" disabled={!row?.num} on:click={() => setRow(row) && borrowUI.showModal()}> 借书 </button>
 
     <Dialog slot="dialog" bind:ui={borrowUI} title="操作确认: 借书">
         <div slot="content">

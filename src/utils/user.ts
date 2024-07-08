@@ -1,7 +1,6 @@
 import { writable } from "svelte/store";
 import { info } from "./alert";
-import { preprocess, type Row } from "./db";
-import { TABLES } from "./tables";
+import DBUtils, { TABLES, type Row } from "./db";
 import { replace } from "svelte-spa-router";
 import NetUtils from "./net";
 
@@ -18,7 +17,7 @@ export const checkLogin = () => {
         searchBy: 'id_number',
         query: idNumber,
     }).then(json => {
-        userInfo.set(preprocess(TABLES.users.columns, json.data.data)[0]);
+        userInfo.set(DBUtils.preprocess(TABLES.users.columns, json.data.data)[0] as Row<typeof TABLES.users.columns>);
         currentIdNumber.set(localStorage.getItem('idNumber'));
     })
 }

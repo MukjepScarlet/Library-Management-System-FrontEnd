@@ -1,10 +1,9 @@
 <script lang="ts">
     import EditDialog from "./base/EditDialog.svelte";
 
-    import { preprocess } from "$/utils/db";
+    import DBUtils, { TABLES } from "$/utils/db";
     import NetUtils from "$/utils/net";
     import { currentIdNumber, userInfo } from "$/utils/user";
-    import { TABLES } from "$/utils/tables";
     import { success } from "$/utils/alert";
 
     const columns = TABLES.users.columns;
@@ -16,7 +15,7 @@
             searchBy: "id_number",
             query: $currentIdNumber!,
         }).then((json) => {
-            $userInfo = preprocess(columns, json.data.data)[0];
+            $userInfo = DBUtils.preprocess(columns, json.data.data)[0] as typeof $userInfo;
         });
     };
 

@@ -5,7 +5,7 @@
     import { error } from "$/utils/alert";
     import Editor from "../editor/Editor.svelte";
 
-    export let columns: Columns;
+    export let columns: Columns<any>;
 
     /** 需要bind */
     export let row: Row<typeof columns> | undefined;
@@ -22,7 +22,7 @@
         if (!row) return false;
 
         let flag = true;
-        for (const [key, { renderName, foreignKey }] of Object.entries(columns)) {
+        for (const [key, { name: renderName, foreignKey }] of Object.entries(columns)) {
             if (!foreignKey) continue;
 
             if (!flag) break;

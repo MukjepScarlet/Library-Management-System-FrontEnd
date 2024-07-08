@@ -3,9 +3,8 @@
     import { route, current } from "$/utils/utils";
 
     import * as echarts from "echarts";
-    import { preprocess, type Row } from "$/utils/db";
+    import DBUtils, { TABLES, type Row } from "$/utils/db";
     import { fade } from "svelte/transition";
-    import { TABLES } from "$/utils/tables";
     import NetUtils from "$/utils/net";
     import { userInfo } from "$/utils/user";
     import { randomSaying } from "$/utils/utils";
@@ -14,7 +13,6 @@
     $current = undefined;
 
     // notices
-
     let notices: Row<typeof TABLES.notice.columns>[] = [];
 
     let currentIndex = 0;
@@ -60,7 +58,7 @@
     };
 
     $: if ($userInfo)
-        NetUtils.myBorrow($userInfo.userId as unknown as number, {
+        NetUtils.myBorrow($userInfo.userId, {
             count: 0,
         }).then((json) => {
             stats.borrowCount.n = json.data.count;
@@ -73,7 +71,7 @@
             order: "desc",
             count: 100,
         }).then((json) => {
-            notices = preprocess(TABLES.notice.columns, json.data.data);
+            notices = DBUtils.preprocess(TABLES.notice.columns, json.data.data) as typeof notices;
         });
 
         NetUtils.query("books", {
@@ -83,7 +81,7 @@
         }).then((json) => {
             stats.bookCount.n = json.data.count;
 
-            books = preprocess(TABLES.books.columns, json.data.data);
+            books = DBUtils.preprocess(TABLES.books.columns, json.data.data) as typeof books;
 
             echarts.init(container1).setOption({
                 title: {
@@ -117,7 +115,7 @@
         }).then((json) => {
             stats.labelCount.n = json.data.count;
 
-            labels = preprocess(TABLES.labels.columns, json.data.data);
+            labels = DBUtils.preprocess(TABLES.labels.columns, json.data.data) as typeof labels;
 
             echarts.init(container2).setOption({
                 title: {

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { TABLES } from "$/utils/tables";
+    import { TABLES } from "$/utils/db";
     import { userInfo } from "$/utils/user";
     import { link } from "svelte-spa-router";
     import { slide } from "svelte/transition";
@@ -75,7 +75,7 @@
                     </li>
 
                     <!-- 管理 -->
-                    {#if ~~$userInfo.roleId >= 2}
+                    {#if $userInfo.roleId >= 2}
                         <li transition:slide>
                             <SidebarMenu>
                                 <svelte:fragment slot="summary">
@@ -90,7 +90,7 @@
 
                                 <svelte:fragment slot="list">
                                     {#each Object.entries(TABLES) as [key, { name, managePermission }] (key)}
-                                        {#if ~~$userInfo.roleId >= managePermission}
+                                        {#if $userInfo.roleId >= managePermission}
                                             <li>
                                                 <a href="/management/{key}/" class="btn btn-ghost" use:link>{name}管理</a>
                                             </li>

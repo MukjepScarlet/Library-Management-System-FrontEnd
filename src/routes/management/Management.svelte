@@ -2,7 +2,7 @@
     import Table from "$/components/Table.svelte";
 
     import { error } from "$/utils/alert";
-    import { TABLES, type TableName } from "$/utils/tables";
+    import { TABLES, type TableName } from "$/utils/db";
     import { userInfo } from "$/utils/user";
     import { route, current } from "$/utils/utils";
     import { onMount } from "svelte";
@@ -16,7 +16,7 @@
     }
 
     onMount(() => {
-        if (!$userInfo || ~~$userInfo.roleId < TABLES[params.table].managePermission) {
+        if (!$userInfo || $userInfo.roleId < TABLES[params.table].managePermission) {
             error("权限不足!");
             push('/');
         }

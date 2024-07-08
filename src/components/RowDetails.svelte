@@ -1,7 +1,7 @@
 <script lang="ts">
     import { type Row, type Columns } from "$/utils/db";
 
-    export let columns: Columns;
+    export let columns: Columns<any>;
 
     export let row: Row<typeof columns> | undefined = undefined;
 
@@ -29,7 +29,7 @@
                     {#if showKey}
                         <td>{key}</td>
                     {/if}
-                    <td>{column.renderName}</td>
+                    <td>{column.name}</td>
                     <td class={row[key] ? "" : "italic text-base-300"}>
                         {#if row[key]}
                             {column.render(row[key])}

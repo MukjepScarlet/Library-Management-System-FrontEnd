@@ -4,7 +4,7 @@
     export { _class as class };
     let _class = "";
 
-    export let columns: Columns;
+    export let columns: Columns<any>;
 
     export let row: Row<typeof columns> | undefined;
 </script>
@@ -18,7 +18,7 @@
                 <label class="form-control">
                     <div class="label">
                         <span class="label-text" class:font-semibold={column.isPrimary} class:italic={column.foreignKey}>
-                            {column.renderName}
+                            {column.name}
                         </span>
                         {#if column.foreignKey}
                             <span class="label-text-alt">{column.foreignKey.tableName} - {column.foreignKey.key}</span>

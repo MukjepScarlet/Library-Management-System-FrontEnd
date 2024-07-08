@@ -1,12 +1,12 @@
 <script lang="ts">
-    import type { Column } from "$/utils/db";
+    import type { DateColumn } from "$/utils/db";
 
     export const max = "9999-12-31";
     export { _class as class, _value as value };
     let _class = "";
     let _value: Date;
 
-    export let column: Column<any>;
+    export let column: DateColumn<any>;
 
     let value: string;
 
