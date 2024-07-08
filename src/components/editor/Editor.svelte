@@ -1,10 +1,10 @@
 <script lang="ts">
-    import type { Columns, Row } from "$/utils/db";
+    import type { Columns, Row, TableName } from "$/utils/db";
 
     export { _class as class };
     let _class = "";
 
-    export let columns: Columns<any>;
+    export let columns: Columns<TableName>;
 
     export let row: Row<typeof columns> | undefined;
 </script>

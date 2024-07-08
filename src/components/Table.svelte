@@ -326,9 +326,9 @@
             <li><button class="btn btn-sm btn-info" on:click|preventDefault={() => updateUI.showModal()}> 编辑 </button></li>
             <li><button class="btn btn-sm btn-error" on:click|preventDefault={() => deleteUI.showModal()}> 删除 </button></li>
             <li>
-                <button class="btn btn-error btn-sm" disabled={!selectedKeys.length} on:click|preventDefault={() => multipleDeleteUI.showModal()}
-                    >删除 (多选)</button
-                >
+                <button class="btn btn-error btn-sm" disabled={!selectedKeys.length} on:click|preventDefault={() => multipleDeleteUI.showModal()}>
+                    删除 (多选)
+                </button>
             </li>
         {/if}
         <li><button class="btn btn-sm btn-info" on:click|preventDefault={selectHandler}>刷新</button></li>
@@ -356,7 +356,7 @@
     </div>
 
     <div slot="action" class="modal-action items-center">
-        <form method="dialog" on:submit={deleteHandler}>
+        <form method="dialog" on:submit>
             <button class="btn btn-secondary">确认</button>
         </form>
     </div>

@@ -22,7 +22,7 @@
         if (!row) return false;
 
         let flag = true;
-        for (const [key, { name: renderName, foreignKey }] of Object.entries(columns)) {
+        for (const [key, { name, foreignKey }] of Object.entries(columns)) {
             if (!foreignKey) continue;
 
             if (!flag) break;
@@ -31,7 +31,7 @@
                 searchBy: foreignKey.key,
                 query: row[key],
                 match: "eq",
-            }).then((json) => json.data.count || ((flag = false), error(`外键 ${renderName} (${key}) 找不到对应值!`, 5000)));
+            }).then((json) => json.data.count || ((flag = false), error(`外键 ${name} (${key}) 找不到对应值!`, 5000)));
         }
 
         return flag;
