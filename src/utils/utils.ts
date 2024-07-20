@@ -64,3 +64,19 @@ export const route = writable<string[]>([]);
 export const current = writable<string | undefined>();
 
 export const isSidebarOpening = writable<boolean>(false);
+
+export function getCookie(key: string): string {
+    const name = `${encodeURIComponent(key)}=`;
+    const cookies = decodeURIComponent(document.cookie);
+
+    const start = cookies.indexOf(name);
+    if (start === -1)
+        return '';
+
+    const startIndex = start + name.length;
+    const endIndex = cookies.indexOf(';', startIndex);
+    
+    const value = endIndex === -1 ? cookies.substring(startIndex) : cookies.substring(startIndex, endIndex);
+    
+    return value;
+}

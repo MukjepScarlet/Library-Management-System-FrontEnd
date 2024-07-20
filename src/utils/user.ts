@@ -2,6 +2,7 @@ import { writable } from "svelte/store";
 import DBUtils, { TABLES, type Row } from "./db";
 import { replace } from "svelte-spa-router";
 import NetUtils from "./net";
+import { getCookie } from "./utils";
 
 type User = Row<typeof TABLES.users.columns>
 
@@ -10,7 +11,7 @@ export const currentIdNumber = writable<string | null>(null);
 export const userInfo = writable<User | undefined>(undefined);
 
 export const checkLogin = () => {
-    NetUtils.api().then(json => login(json.data));
+    getCookie('userInfo').length && NetUtils.api().then(json => login(json.data));
 }
 
 export const login = (user: any) => {
@@ -21,8 +22,6 @@ export const login = (user: any) => {
 };
 
 export const logout = () => {
-    localStorage.removeItem('idNumber');
     currentIdNumber.set(null);
     replace('/');
 }
-

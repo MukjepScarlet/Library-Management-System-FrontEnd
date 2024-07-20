@@ -65,12 +65,14 @@ const request = (method: string = 'GET', url: string, options: QueryOptions | un
         }
     }
 
-    return fetch(makeFullURL(url), fetchParams).then(checkIfSucceeded)
+    return fetch(makeFullURL(url), fetchParams).then(checkIfSucceeded).catch(error)
 }
 
 export default {
     // 无需登录
-    api: (): Promise<APIResult & { data: Row<any> }> => request('GET', ''),
+    api: function (): Promise<APIResult & { data: Row<any> }> {
+        return request('GET', '')
+    },
 
     register: function (studentIdNumber: string, password: string, email: string): Promise<APIResult & { data: Row<any> }> {
         return request('PUT', `/register`, undefined, { studentIdNumber, password, email })
