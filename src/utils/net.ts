@@ -85,6 +85,10 @@ export default {
         return request('PUT', `/modify/${tableName}`, undefined, formatData(item))
     },
 
+    borrow: function (userId: number, isbn: string, borrowDays: number): Promise<APIResult> {
+        return request('PUT', `/borrow/${userId}`, undefined, { isbn, borrowDays })
+    },
+
     myBorrow: function (userId: number, options: QueryOptions): Promise<QueryResult> {
         return request('GET', `/personal/${userId}`, options)
     },
