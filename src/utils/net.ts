@@ -89,6 +89,10 @@ export default {
         return request('PUT', `/borrow/${userId}`, undefined, { isbn, borrowDays })
     },
 
+    return: function (userId: number, idList: number[]): Promise<APIResult> {
+        return request('DELETE', `/return/${userId}`, undefined, idList)
+    },
+
     myBorrow: function (userId: number, options: QueryOptions): Promise<QueryResult> {
         return request('GET', `/personal/${userId}`, options)
     },

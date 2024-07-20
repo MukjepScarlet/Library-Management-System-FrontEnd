@@ -6,7 +6,7 @@
     import type { Column, Row } from "$/utils/db";
     import NetUtils from "$/utils/net";
     import { TABLES } from "$/utils/db";
-    import { currentIdNumber, userInfo } from "$/utils/user";
+    import { userInfo } from "$/utils/user";
 
     import { route, current } from "$/utils/utils";
     import { onMount } from "svelte";
@@ -36,12 +36,12 @@
             return;
         }
 
-        if (!$currentIdNumber) {
+        if (!$userInfo) {
             error("先登录!");
             return;
         }
 
-        NetUtils.remove("borrowinfo", [currentRow.id]).then(() => {
+        NetUtils.return($userInfo.userId, [currentRow.id]).then(() => {
             success("归还成功!");
             selectTrigger = true;
         });
