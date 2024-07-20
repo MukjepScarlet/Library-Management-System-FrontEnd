@@ -69,34 +69,7 @@ const request = (method: string = 'GET', url: string, options: QueryOptions | un
 }
 
 export default {
-    query: function (tableName: string, options: QueryOptions): Promise<QueryResult> {
-        return request('GET', `/query/${tableName}`, options)
-    },
-
-    add: function (tableName: string, item: Row<any>): Promise<APIResult> {
-        return request('PUT', `/add/${tableName}`, undefined, formatData(item))
-    },
-
-    remove: function (tableName: string, keys: any[]): Promise<APIResult> {
-        return request('DELETE', `/remove/${tableName}`, undefined, keys)
-    },
-
-    modify: function (tableName: string, item: Row<any>): Promise<APIResult> {
-        return request('PUT', `/modify/${tableName}`, undefined, formatData(item))
-    },
-
-    borrow: function (userId: number, isbn: string, borrowDays: number): Promise<APIResult> {
-        return request('PUT', `/borrow/${userId}`, undefined, { isbn, borrowDays })
-    },
-
-    return: function (userId: number, idList: number[]): Promise<APIResult> {
-        return request('DELETE', `/return/${userId}`, undefined, idList)
-    },
-
-    myBorrow: function (userId: number, options: QueryOptions): Promise<QueryResult> {
-        return request('GET', `/personal/${userId}`, options)
-    },
-
+    // 无需登录
     api: (): Promise<APIResult & { data: Row<any> }> => request('GET', ''),
 
     register: function (studentIdNumber: string, password: string, email: string): Promise<APIResult & { data: Row<any> }> {
@@ -109,5 +82,35 @@ export default {
 
     logout: function (): Promise<APIResult> {
         return request('PUT', `/logout`)
+    },
+
+    query: function (tableName: string, options: QueryOptions): Promise<QueryResult> {
+        return request('GET', `/query/${tableName}`, options)
+    },
+
+    // 用户
+    borrow: function (userId: number, isbn: string, borrowDays: number): Promise<APIResult> {
+        return request('PUT', `/borrow/${userId}`, undefined, { isbn, borrowDays })
+    },
+
+    return: function (userId: number, idList: number[]): Promise<APIResult> {
+        return request('DELETE', `/return/${userId}`, undefined, idList)
+    },
+
+    myBorrow: function (userId: number, options: QueryOptions): Promise<QueryResult> {
+        return request('GET', `/personal/${userId}`, options)
+    },
+
+    // 管理员
+    add: function (tableName: string, item: Row<any>): Promise<APIResult> {
+        return request('PUT', `/add/${tableName}`, undefined, formatData(item))
+    },
+
+    remove: function (tableName: string, keys: any[]): Promise<APIResult> {
+        return request('DELETE', `/remove/${tableName}`, undefined, keys)
+    },
+
+    modify: function (tableName: string, item: Row<any>): Promise<APIResult> {
+        return request('PUT', `/modify/${tableName}`, undefined, formatData(item))
     },
 }
