@@ -53,62 +53,55 @@ const formatData = (data: Record<string, any>) =>
 
 const makeRequestParam = (data: Record<string, any>) => new URLSearchParams(formatData(data));
 
+const request = (method: string = 'GET', url: string, options: QueryOptions | undefined = undefined, data: any | undefined = undefined) => {
+    if (options)
+        url += '?' + makeRequestParam(options)
+
+    const fetchParams: RequestInit = {
+        method,
+        credentials: 'include',
+    }
+
+    if (data) {
+        fetchParams.body = JSON.stringify(data)
+        fetchParams.headers = {
+            "Content-Type": "application/json;charset=UTF-8"
+        }
+    }
+
+    return fetch(makeFullURL(url), fetchParams).then(checkIfSucceeded)
+}
+
 export default {
     query: function (tableName: string, options: QueryOptions): Promise<QueryResult> {
-        return fetch(makeFullURL(`/query/${tableName}?${makeRequestParam(options)}`)).then(checkIfSucceeded)
+        return request('GET', `/query/${tableName}`, options)
     },
 
     add: function (tableName: string, item: Row<any>): Promise<APIResult> {
-        return fetch(makeFullURL(`/add/${tableName}`), {
-            headers: {
-                "Content-Type": "application/json;charset=UTF-8"
-            },
-            method: "PUT",
-            body: JSON.stringify(formatData(item))
-        }).then(checkIfSucceeded)
+        return request('PUT', `/add/${tableName}`, undefined, formatData(item))
     },
 
     remove: function (tableName: string, keys: any[]): Promise<APIResult> {
-        return fetch(makeFullURL(`/remove/${tableName}`), {
-            headers: {
-                "Content-Type": "application/json;charset=UTF-8"
-            },
-            method: "DELETE",
-            body: JSON.stringify(keys)
-        }).then(checkIfSucceeded)
+        return request('DELETE', `/remove/${tableName}`, undefined, keys)
     },
 
     modify: function (tableName: string, item: Row<any>): Promise<APIResult> {
-        return fetch(makeFullURL(`/modify/${tableName}`), {
-            headers: {
-                "Content-Type": "application/json;charset=UTF-8"
-            },
-            method: "PUT",
-            body: JSON.stringify(formatData(item))
-        }).then(checkIfSucceeded)
+        return request('PUT', `/modify/${tableName}`, undefined, formatData(item))
     },
 
     myBorrow: function (userId: number, options: QueryOptions): Promise<QueryResult> {
-        return fetch(makeFullURL(`/personal/${userId}?${makeRequestParam(options)}`)).then(checkIfSucceeded)
+        return request('GET', `/personal/${userId}`, options)
     },
 
     register: function (studentIdNumber: string, password: string, email: string): Promise<RegisterResult> {
-        return fetch(makeFullURL(`/register/`), {
-            headers: {
-                "Content-Type": "application/json;charset=UTF-8"
-            },
-            method: "PUT",
-            body: JSON.stringify({ studentIdNumber, password, email })
-        }).then(checkIfSucceeded)
+        return request('PUT', `/register/`, undefined, { studentIdNumber, password, email })
     },
 
     login: function (idNumber: string, password: string): Promise<QueryResult> {
-        return fetch(makeFullURL(`/login/`), {
-            headers: {
-                "Content-Type": "application/json;charset=UTF-8"
-            },
-            method: "PUT",
-            body: JSON.stringify({ idNumber, password })
-        }).then(checkIfSucceeded)
+        return request('PUT', `/login/`, undefined, { idNumber, password })
     },
+
+    logout: function (): Promise<QueryResult> {
+        return request('PUT', `/logout/`)
+    }
 }

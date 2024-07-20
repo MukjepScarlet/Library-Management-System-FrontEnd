@@ -1,5 +1,4 @@
 import { writable } from "svelte/store";
-import { info } from "./alert";
 import DBUtils, { TABLES, type Row } from "./db";
 import { replace } from "svelte-spa-router";
 import NetUtils from "./net";
@@ -32,6 +31,5 @@ export const logout = () => {
     localStorage.removeItem('idNumber');
     currentIdNumber.set(null);
     replace('/');
-    info('您已退出...')
 }
 

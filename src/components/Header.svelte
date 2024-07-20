@@ -6,8 +6,17 @@
 
     import UserEditDialog from "./UserEditDialog.svelte";
     import { fly } from "svelte/transition";
+    import { success } from "$/utils/alert";
+    import NetUtils from "$/utils/net";
 
     let ui: HTMLDialogElement;
+
+    const logoutHandler = () => {
+        NetUtils.logout().then(() => {
+            success("退出成功");
+            logout();
+        });
+    };
 </script>
 
 <nav class="navbar justify-between md:px-8 bg-base-100 bg-opacity-25 shadow-md z-[1] sticky top-0 backdrop-blur-sm">
@@ -43,7 +52,7 @@
         {#if $currentIdNumber}
             <!-- 登录 -->
             <button in:fly class="btn btn-primary" on:click={() => ui.showModal()}>个人信息</button>
-            <button in:fly class="btn btn-error" on:click={logout}>退出登录</button>
+            <button in:fly class="btn btn-error" on:click={logoutHandler}>退出登录</button>
         {:else}
             <!-- 未登录 -->
             <a in:fly class="btn btn-primary" href="/register/" use:link>注册</a>
