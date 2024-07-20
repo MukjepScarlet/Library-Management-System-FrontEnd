@@ -240,7 +240,7 @@
                 >
                     <!-- 内容 -->
                     {#each Object.entries(columns) as [key, column] (key)}
-                        {#if row[key]}
+                        {#if row[key] !== null}
                             <td class:font-semibold={column.isPrimary} class:italic={column.foreignKey !== undefined}>
                                 {#if column.isPrimary && allowModify}
                                     <!-- 主键特殊处理: 多选框 -->
