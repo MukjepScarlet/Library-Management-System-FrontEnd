@@ -264,8 +264,9 @@ export default {
      */
     preprocess: <T extends TableName>(columns: Columns<T>, rows: Row<typeof columns>[]): Row<typeof columns>[] =>
         rows.map((row) => {
-            for (const key of Object.keys(columns) as (keyof typeof columns)[]) if (columns[key] instanceof DateColumn) (row[key] as Date) = new Date(row[key]);
-
+            for (const key of Object.keys(columns) as (keyof typeof columns)[])
+                if (columns[key] instanceof DateColumn)
+                    (row[key] as Date) = new Date(row[key]);
             return row;
         }),
 };

@@ -3,27 +3,20 @@ import DBUtils, { TABLES, type Row } from "./db";
 import { replace } from "svelte-spa-router";
 import NetUtils from "./net";
 
+type User = Row<typeof TABLES.users.columns>
+
 export const currentIdNumber = writable<string | null>(null);
 
-export const userInfo = writable<Row<typeof TABLES.users.columns> | undefined>(undefined);
+export const userInfo = writable<User | undefined>(undefined);
 
 export const checkLogin = () => {
-    const idNumber = localStorage.getItem('idNumber');
-
-    if (!idNumber) return;
-
-    NetUtils.query('users', {
-        searchBy: 'id_number',
-        query: idNumber,
-    }).then(json => {
-        userInfo.set(DBUtils.preprocess(TABLES.users.columns, json.data.data)[0] as Row<typeof TABLES.users.columns>);
-        currentIdNumber.set(localStorage.getItem('idNumber'));
-    })
+    NetUtils.api().then(json => login(json.data));
 }
 
-export const login = (idNumber: string | number) => {
-    localStorage.setItem('idNumber', idNumber.toString());
-    currentIdNumber.set(idNumber.toString());
+export const login = (user: any) => {
+    user = DBUtils.preprocess(TABLES.users.columns, [user])[0] as User;
+    userInfo.set(user);
+    currentIdNumber.set(user.idNumber);
     replace('/');
 };
 

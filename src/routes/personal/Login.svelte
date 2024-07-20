@@ -24,9 +24,9 @@
             return;
         }
 
-        NetUtils.login(idNumber, password).then(() => {
+        NetUtils.login(idNumber, password).then((json) => {
             success("欢迎回来!");
-            login(idNumber);
+            login(json.data);
         });
     };
 </script>

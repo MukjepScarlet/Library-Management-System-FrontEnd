@@ -27,10 +27,6 @@ interface QueryResult extends APIResult {
     }
 }
 
-interface RegisterResult extends APIResult {
-    data: Row<any> // TODO: Row<TABLES.users.columns> // 找不到命名空间“TABLES”。
-}
-
 const CODE_OK = 200
 
 const checkIfSucceeded = (response: Response) => response.json().then((json) => {
@@ -93,15 +89,17 @@ export default {
         return request('GET', `/personal/${userId}`, options)
     },
 
-    register: function (studentIdNumber: string, password: string, email: string): Promise<RegisterResult> {
-        return request('PUT', `/register/`, undefined, { studentIdNumber, password, email })
+    api: (): Promise<APIResult & { data: Row<any> }> => request('GET', ''),
+
+    register: function (studentIdNumber: string, password: string, email: string): Promise<APIResult & { data: Row<any> }> {
+        return request('PUT', `/register`, undefined, { studentIdNumber, password, email })
     },
 
-    login: function (idNumber: string, password: string): Promise<QueryResult> {
-        return request('PUT', `/login/`, undefined, { idNumber, password })
+    login: function (idNumber: string, password: string): Promise<APIResult & { data: Row<any> }> {
+        return request('PUT', `/login`, undefined, { idNumber, password })
     },
 
-    logout: function (): Promise<QueryResult> {
-        return request('PUT', `/logout/`)
-    }
+    logout: function (): Promise<APIResult> {
+        return request('PUT', `/logout`)
+    },
 }
