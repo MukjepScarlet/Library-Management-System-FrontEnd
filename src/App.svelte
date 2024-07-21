@@ -31,8 +31,8 @@
         "/management/:table/": Management,
     };
 
-    onMount(() => {
-        checkLogin();
+    onMount(async () => {
+        await checkLogin();
     });
 </script>
 

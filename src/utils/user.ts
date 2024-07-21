@@ -10,8 +10,8 @@ export const currentIdNumber = writable<string | null>(null);
 
 export const userInfo = writable<User | undefined>(undefined);
 
-export const checkLogin = () => {
-    getCookie('userInfo').length && NetUtils.api().then(json => login(json.data));
+export const checkLogin = async () => {
+    getCookie('USER_INFO').length && await NetUtils.api().then(json => login(json.data));
 }
 
 export const login = (user: any) => {
@@ -23,5 +23,6 @@ export const login = (user: any) => {
 
 export const logout = () => {
     currentIdNumber.set(null);
+    userInfo.set(undefined);
     replace('/');
 }

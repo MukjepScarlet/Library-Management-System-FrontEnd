@@ -92,6 +92,9 @@
                     data: ["库存量"],
                 },
                 xAxis: {
+                    axisLabel: {
+                        interval: 0,
+                    },
                     data: books.map((it) => it.name),
                 },
                 yAxis: {},
@@ -126,6 +129,9 @@
                     data: ["书籍数"],
                 },
                 xAxis: {
+                    axisLabel: {
+                        interval: 0,
+                    },
                     data: labels.map((it) => it.name),
                 },
                 yAxis: {},
