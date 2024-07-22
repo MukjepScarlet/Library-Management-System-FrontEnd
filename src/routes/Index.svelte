@@ -58,7 +58,7 @@
     };
 
     $: if ($userInfo)
-        NetUtils.myBorrow($userInfo.userId, {
+        NetUtils.myBorrow({
             count: 0,
         }).then((json) => {
             stats.borrowCount.n = json.data.count;

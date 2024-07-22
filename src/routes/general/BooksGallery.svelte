@@ -42,7 +42,7 @@
             return;
         }
 
-        NetUtils.borrow($userInfo.userId, currentRow.isbn, borrowDays).then(() => {
+        NetUtils.borrow(currentRow.isbn, borrowDays).then(() => {
             success("借阅成功!");
             selectTrigger = true;
         });

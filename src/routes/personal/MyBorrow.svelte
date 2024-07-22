@@ -41,7 +41,7 @@
             return;
         }
 
-        NetUtils.return($userInfo.userId, [currentRow.id]).then(() => {
+        NetUtils.return([currentRow.id]).then(() => {
             success("归还成功!");
             selectTrigger = true;
         });
@@ -50,7 +50,7 @@
     const setRow = (row: Row<{ [key: string]: Column<any> }> | undefined) => (currentRow = row as Row<typeof columns>);
 </script>
 
-<Table name="borrowinfo" selectAPI={NetUtils.myBorrow} selectParam={$userInfo?.userId?.toString()} bind:selectTrigger>
+<Table name="borrowinfo" selectAPI={NetUtils.myBorrow} bind:selectTrigger>
     <button slot="operation" let:row class="btn btn-sm btn-primary" on:click={() => setRow(row) && returnUI.showModal()}> 归还 </button>
 
     <Dialog slot="dialog" bind:ui={returnUI} title="操作确认: 还书">

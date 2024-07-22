@@ -3,7 +3,7 @@
     import DBUtils, { TABLES, type TableName, Column, type Columns, type Row } from "$/utils/db";
     import { success } from "$/utils/alert";
     import NetUtils, { type QueryOptions } from "$/utils/net";
-    import { clamp } from "$/utils/utils";
+    import { clamp, curry } from "$/utils/utils";
 
     import Dialog from "./base/Dialog.svelte";
     import EditDialog from "./base/EditDialog.svelte";
@@ -47,9 +47,7 @@
     $: startIndex = clamp((currentPage - 1) * count, 0, total);
     $: maxPage = count && Math.ceil(total / count);
 
-    export let selectAPI: (p: any, options: QueryOptions) => Promise<any> = NetUtils.query;
-
-    export let selectParam: string = name;
+    export let selectAPI: (options: QueryOptions) => Promise<any> = curry(NetUtils.query)(name);
 
     /** 外部(父组件)调用刷新 */
     export let selectTrigger: boolean = false;
@@ -62,7 +60,7 @@
         currentRow = undefined;
         selectedKeys.length = 0;
 
-        selectAPI(selectParam, {
+        selectAPI({
             searchBy: DBUtils.parseColumnName(searchBy),
             query,
             match: fullMatch ? "eq" : "like",

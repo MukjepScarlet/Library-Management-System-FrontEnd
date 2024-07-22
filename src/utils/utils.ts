@@ -75,8 +75,29 @@ export function getCookie(key: string): string {
 
     const startIndex = start + name.length;
     const endIndex = cookies.indexOf(';', startIndex);
-    
+
     const value = endIndex === -1 ? cookies.substring(startIndex) : cookies.substring(startIndex, endIndex);
-    
+
     return value;
+}
+
+type Curried<A extends any[], R> = A extends []
+    ? R
+    : A extends [infer F]
+    ? (p: F) => R
+    : A extends [infer F, ...infer L]
+    ? (p: F) => Curried<L, R>
+    : never;
+
+/** 柯里化 */
+export function curry<A extends any[], R>(fn: (...args: A) => R): Curried<A, R> {
+    return function curried(...args: any[]): any {
+        if (args.length >= fn.length) {
+            return fn(...args as A);
+        } else {
+            return function (...next: any[]) {
+                return curried(...args, ...next);
+            };
+        }
+    } as Curried<A, R>;
 }

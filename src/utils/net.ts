@@ -91,16 +91,16 @@ export default {
     },
 
     // 用户
-    borrow: function (userId: number, isbn: string, borrowDays: number): Promise<APIResult> {
-        return request('PUT', `/borrow/${userId}`, undefined, { isbn, borrowDays })
+    borrow: function (isbn: string, borrowDays: number): Promise<APIResult> {
+        return request('PUT', `/borrow`, undefined, { isbn, borrowDays })
     },
 
-    return: function (userId: number, idList: number[]): Promise<APIResult> {
-        return request('DELETE', `/return/${userId}`, undefined, idList)
+    return: function (idList: number[]): Promise<APIResult> {
+        return request('DELETE', `/return`, undefined, idList)
     },
 
-    myBorrow: function (userId: number, options: QueryOptions): Promise<QueryResult> {
-        return request('GET', `/personal/${userId}`, options)
+    myBorrow: function (options: QueryOptions): Promise<QueryResult> {
+        return request('GET', `/personal`, options)
     },
 
     // 管理员
