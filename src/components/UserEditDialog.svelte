@@ -9,7 +9,7 @@
     const columns = TABLES.users.columns;
 
     const handler = () => {
-        NetUtils.modify("users", $userInfo!).then(() => {
+        NetUtils.setProfile($userInfo!).then(() => {
             success("修改成功!");
             ui.close();
         });

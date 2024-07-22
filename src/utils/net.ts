@@ -70,7 +70,7 @@ const request = (method: string = 'GET', url: string, options: QueryOptions | un
 
 export default {
     // 无需登录
-    api: function (): Promise<APIResult & { data: Row<any> }> {
+    getProfile: function (): Promise<APIResult & { data: Row<any> }> {
         return request('GET', '')
     },
 
@@ -91,6 +91,10 @@ export default {
     },
 
     // 用户
+    setProfile: function(userInfo: Row<any>): Promise<APIResult> {
+        return request('PUT', '', undefined, userInfo)
+    },
+
     borrow: function (isbn: string, borrowDays: number): Promise<APIResult> {
         return request('PUT', `/borrow`, undefined, { isbn, borrowDays })
     },

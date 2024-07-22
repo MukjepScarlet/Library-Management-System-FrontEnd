@@ -6,7 +6,7 @@
     import DBUtils, { TABLES, type Row } from "$/utils/db";
     import { fade } from "svelte/transition";
     import NetUtils from "$/utils/net";
-    import { userInfo } from "$/utils/user";
+    import { currentIdNumber } from "$/utils/user";
     import { randomSaying } from "$/utils/utils";
 
     $route = [];
@@ -57,7 +57,7 @@
         },
     };
 
-    $: if ($userInfo)
+    $: if ($currentIdNumber)
         NetUtils.myBorrow({
             count: 0,
         }).then((json) => {

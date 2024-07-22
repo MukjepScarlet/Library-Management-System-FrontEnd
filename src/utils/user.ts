@@ -11,7 +11,7 @@ export const currentIdNumber = writable<string | null>(null);
 export const userInfo = writable<User | undefined>(undefined);
 
 export const checkLogin = async () => {
-    getCookie('USER_INFO').length && await NetUtils.api().then(json => login(json.data));
+    getCookie('USER_INFO').length && await NetUtils.getProfile().then(json => login(json.data));
 }
 
 export const login = (user: any) => {
